@@ -22,6 +22,8 @@ import com.io7m.quarrel.core.QCommandParserConfiguration;
 import com.io7m.quarrel.core.QCommandParserType;
 import com.io7m.quarrel.core.QCommandType;
 import com.io7m.quarrel.core.QException;
+import com.io7m.quarrel.core.QLocalization;
+import com.io7m.quarrel.core.QLocalizationType;
 import com.io7m.quarrel.core.QParameterNamed01;
 import com.io7m.quarrel.core.QParameterNamed0N;
 import com.io7m.quarrel.core.QParameterNamed1;
@@ -57,7 +59,7 @@ public final class QCommandParser implements QCommandParserType
 {
   private final QCommandParserConfiguration configuration;
   private final QStrings strings;
-  private final QLocalization localization;
+  private final QLocalizationType localization;
 
   /**
    * The command parser.
@@ -75,7 +77,7 @@ public final class QCommandParser implements QCommandParserType
     this.strings =
       Objects.requireNonNull(inStrings, "strings");
     this.localization =
-      new QLocalization(
+      QLocalization.create(
         this.strings.resources(),
         this.configuration.applicationResources()
       );
