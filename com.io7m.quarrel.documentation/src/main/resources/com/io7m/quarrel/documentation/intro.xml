@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Section xmlns="urn:com.io7m.structural:8:0"
+         id="8180b172-6270-4d7e-95ea-2894e878eed9"
+         title="Introduction">
+
+  <Paragraph>
+    The <Term type="package">quarrel</Term> package provides a strict, opinionated
+    command-line argument parser intended for producing consistent command-line
+    applications.
+  </Paragraph>
+
+  <FormalItem title="Features">
+    <ListUnordered>
+      <Item>
+        Strongly-typed access to command-line arguments, for program correctness.
+      </Item>
+      <Item>
+        Simple and regular command-line parsing for easily understood command-line interfaces.
+      </Item>
+      <Item>
+        Automatic generation of "help" and "version" commands for command-line interfaces.
+      </Item>
+      <Item>
+        Detailed, structured, and localized user-facing error messages for clear
+        explanations as to how to use the command-line interfaces correctly.
+      </Item>
+      <Item>
+        A small, easily auditable codebase with no use of reflection or annotations.
+      </Item>
+      <Item>
+        An extensive automated test suite with high coverage.
+      </Item>
+      <Item>
+        Supplies a restricted form of @ syntax, for storing command-line arguments in files.
+      </Item>
+      <Item>
+        Fully documented, with usage tutorial.
+      </Item>
+      <Item>
+        <LinkExternal target="https://www.osgi.org/">OSGi</LinkExternal>-ready
+      </Item>
+      <Item>
+        <LinkExternal target="https://en.wikipedia.org/wiki/Java_Platform_Module_System">JPMS</LinkExternal>-ready
+      </Item>
+      <Item>
+        ISC license.
+      </Item>
+    </ListUnordered>
+  </FormalItem>
+
+</Section>
