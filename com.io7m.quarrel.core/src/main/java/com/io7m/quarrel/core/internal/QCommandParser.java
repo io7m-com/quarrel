@@ -420,9 +420,6 @@ public final class QCommandParser implements QCommandParserType
           this.type(),
           parameter.parameter.type().getCanonicalName()),
         Map.entry(
-          this.example(),
-          parameter.parameter.name() + " " + parameter.valueConverter.exampleValue()),
-        Map.entry(
           this.syntax(),
           parameter.valueConverter.syntax())
       ),
