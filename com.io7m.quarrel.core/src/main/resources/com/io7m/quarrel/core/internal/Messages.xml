@@ -6,7 +6,7 @@
   <entry key="quarrel.usage">{0}: usage: {0} [command] [arguments ...]</entry>
   <entry key="quarrel.usage.command">{0}: usage: {1} [named-arguments ...] {2}</entry>
   <entry key="quarrel.usage.command.no_named">{0}: usage: {1} {2}</entry>
-  <entry key="quarrel.usage.command.no_positional">{0}: usage: {1}</entry>
+  <entry key="quarrel.usage.command.no_positional">{0}: usage: {1} [named-arguments ...]</entry>
   <entry key="quarrel.usage.command.none">{0}: usage: {1}</entry>
 
   <entry key="quarrel.usage.group">{0}: usage: {1} [command ...]</entry>
@@ -77,23 +77,25 @@ For example, for a hypothetical application named "quarrel":
   <entry key="quarrel.help.cardinality.01">[0, 1]; Specify at most once, or use the default.</entry>
   <entry key="quarrel.help.cardinality.01.noDefault">[0, 1]; Specify at most once.</entry>
 
-  <entry key="quarrel.errorExpectsOneValue">The parameter expects one value, but more than one was provided.</entry>
-  <entry key="quarrel.errorWrongNumberOfValues">The wrong number of values were provided for a parameter.</entry>
-  <entry key="quarrel.errorSuggestProvideRightNumber">Provide the right number of arguments for the parameter.</entry>
-  <entry key="quarrel.errorSuggestProvideExactlyOne">Provide exactly one value on the command-line.</entry>
-  <entry key="quarrel.errorWrongNumberOfPositionalArguments">The wrong number of positional arguments were provided.</entry>
-  <entry key="quarrel.errorParameterUnparseable">The value supplied for a parameter is unparseable.</entry>
-  <entry key="quarrel.errorSuggestProvideParseable">Provide a parseable value on the command-line.</entry>
-  <entry key="quarrel.errorParameterMissingValue">A parameter is missing a value.</entry>
-  <entry key="quarrel.errorSuggestProvideValue">Provide a value on the command-line.</entry>
-  <entry key="quarrel.errorParameterNoValueConverter">No value converter is available for the parameter.</entry>
-  <entry key="quarrel.errorSuggestRegisterConverter">Register a value converter for the given class.</entry>
-  <entry key="quarrel.errorParameterMultipleSameNames">Multiple parameters declare the same names.</entry>
-  <entry key="quarrel.errorSuggestUniqueNames">Use unique names for parameters.</entry>
-  <entry key="quarrel.errorYieldedCommandUnexpectedly">The specified command path yielded a command before all path elements were consumed.</entry>
-  <entry key="quarrel.errorSuggestRightPath">Specify the name of an existing command.</entry>
   <entry key="quarrel.errorCommandNonexistent">The specified command does not exist.</entry>
+  <entry key="quarrel.errorExpectsOneValue">The parameter expects one value, but more than one was provided.</entry>
   <entry key="quarrel.errorIOFile">An error occurred when trying to open/read the given file.</entry>
+  <entry key="quarrel.errorParameterMissingValue">A parameter is missing a value.</entry>
+  <entry key="quarrel.errorParameterMultipleSameNames">Multiple parameters declare the same names.</entry>
+  <entry key="quarrel.errorParameterNoValueConverter">No value converter is available for the parameter.</entry>
+  <entry key="quarrel.errorParameterUnparseable">The value supplied for a parameter is unparseable.</entry>
+  <entry key="quarrel.errorSuggestExistingNamedParameter">Use an existing named parameter.</entry>
+  <entry key="quarrel.errorSuggestProvideExactlyOne">Provide exactly one value on the command-line.</entry>
+  <entry key="quarrel.errorSuggestProvideParseable">Provide a parseable value on the command-line.</entry>
+  <entry key="quarrel.errorSuggestProvideRightNumber">Provide the right number of arguments for the parameter.</entry>
+  <entry key="quarrel.errorSuggestProvideValue">Provide a value on the command-line.</entry>
+  <entry key="quarrel.errorSuggestRegisterConverter">Register a value converter for the given class.</entry>
+  <entry key="quarrel.errorSuggestRightPath">Specify the name of an existing command.</entry>
+  <entry key="quarrel.errorSuggestUniqueNames">Use unique names for parameters.</entry>
+  <entry key="quarrel.errorUnrecognizedNamedParameter">An unrecognized named parameter was specified.</entry>
+  <entry key="quarrel.errorWrongNumberOfPositionalArguments">The wrong number of positional arguments were provided.</entry>
+  <entry key="quarrel.errorWrongNumberOfValues">The wrong number of values were provided for a parameter.</entry>
+  <entry key="quarrel.errorYieldedCommandUnexpectedly">The specified command path yielded a command before all path elements were consumed.</entry>
 
   <entry key="quarrel.command">Command</entry>
   <entry key="quarrel.commandFound">Command Found</entry>

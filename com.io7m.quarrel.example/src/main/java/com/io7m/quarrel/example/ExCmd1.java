@@ -15,60 +15,67 @@
  */
 
 
-package com.io7m.quarrel.tests;
+package com.io7m.quarrel.example;
 
 import com.io7m.quarrel.core.QCommandContextType;
 import com.io7m.quarrel.core.QCommandMetadata;
 import com.io7m.quarrel.core.QCommandStatus;
 import com.io7m.quarrel.core.QCommandType;
-import com.io7m.quarrel.core.QParameterNamed0N;
+import com.io7m.quarrel.core.QParameterNamed01;
 import com.io7m.quarrel.core.QParameterNamedType;
-import com.io7m.quarrel.core.QParametersPositionalAny;
 import com.io7m.quarrel.core.QParametersPositionalNone;
 import com.io7m.quarrel.core.QParametersPositionalType;
-import com.io7m.quarrel.core.QStringType;
+import com.io7m.quarrel.core.QStringType.QConstant;
 
 import java.util.List;
 import java.util.Optional;
 
 import static com.io7m.quarrel.core.QCommandStatus.SUCCESS;
 
-final class QCommandNoPositionals implements QCommandType
+/**
+ * An example command.
+ */
+
+public final class ExCmd1 implements QCommandType
 {
-  public static final QParameterNamed0N<String> PARAMETER =
-    new QParameterNamed0N<>(
+  private static final QParameterNamed01<String> PARAMETER_0 =
+    new QParameterNamed01<>(
       "--file",
       List.of(),
-      new QStringType.QConstant("A file."),
-      List.of(),
+      new QConstant("A file."),
+      Optional.empty(),
       String.class
     );
 
-  QCommandNoPositionals()
+  /**
+   * An example command.
+   */
+
+  public ExCmd1()
   {
 
-  }
-
-  @Override
-  public List<QParameterNamedType<?>> onListNamedParameters()
-  {
-    return List.of();
-  }
-
-  @Override
-  public QParametersPositionalType onListPositionalParameters()
-  {
-    return new QParametersPositionalNone();
   }
 
   @Override
   public QCommandMetadata metadata()
   {
     return new QCommandMetadata(
-      "cmd-no-positionals",
-      new QStringType.QConstant(""),
+      "cmd-1",
+      new QConstant("Command 1."),
       Optional.empty()
     );
+  }
+
+  @Override
+  public List<QParameterNamedType<?>> onListNamedParameters()
+  {
+    return List.of(PARAMETER_0);
+  }
+
+  @Override
+  public QParametersPositionalType onListPositionalParameters()
+  {
+    return new QParametersPositionalNone();
   }
 
   @Override

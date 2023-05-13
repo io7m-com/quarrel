@@ -29,6 +29,8 @@ import com.io7m.quarrel.core.QStringType.QLocalize;
 import java.util.List;
 import java.util.Optional;
 
+import static com.io7m.quarrel.core.QCommandStatus.SUCCESS;
+
 /**
  * An example command.
  */
@@ -69,8 +71,7 @@ public final class ExCmd0 implements QCommandType
   @Override
   public QCommandStatus onExecute(
     final QCommandContextType context)
-    throws Exception
   {
-    return null;
+    return SUCCESS;
   }
 }
