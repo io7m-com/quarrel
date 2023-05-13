@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+
+<properties>
+  <entry key="quarrel.usage">{0}: usage: {0} [command] [arguments ...]</entry>
+  <entry key="quarrel.usage.command">{0}: usage: {1} [named-arguments ...] {2}</entry>
+  <entry key="quarrel.usage.command.no_named">{0}: usage: {1} {2}</entry>
+  <entry key="quarrel.usage.command.no_positional">{0}: usage: {1}</entry>
+  <entry key="quarrel.usage.command.none">{0}: usage: {1}</entry>
+
+  <entry key="quarrel.usage.group">{0}: usage: {1} [command ...]</entry>
+
+  <entry key="quarrel.positional.any">[positional-arguments ...]</entry>
+
+  <entry key="quarrel.usage.help"><![CDATA[
+Use the "help" command to examine specific commands:
+
+  $ {0} help help.
+
+Command-line arguments can be placed one per line into a file, and
+the file can be referenced using the @ symbol:
+
+  $ echo help > file.txt
+  $ echo help >> file.txt
+  $ {0} @file.txt
+]]></entry>
+  <entry key="quarrel.usage.commands">Commands:</entry>
+  <entry key="quarrel.usage.documentation">Documentation:</entry>
+
+  <entry key="quarrel.version.description">Show the application version.</entry>
+  <entry key="quarrel.version.description.long"><![CDATA[
+The version command produces the following output, in order:
+
+  * The application ID (such as "com.io7m.quarrel")
+  * The application version (such as "1.2.0")
+  * The application build (such as "eacd59a2")
+
+For example, for a hypothetical application named "quarrel":
+
+  $ quarrel version
+  com.io7m.quarrel 1.2.0 eacd59a2
+]]></entry>
+
+  <entry key="quarrel.help.description">Show usage information for a command.</entry>
+  <entry key="quarrel.help.description.long"><![CDATA[
+The help command provides usage information for the given
+named command.
+
+For example, for a hypothetical application named "quarrel":
+
+  $ quarrel help version
+  ...
+  $ quarrel help help
+  ...
+]]></entry>
+
+  <entry key="quarrel.help.commands">Commands:</entry>
+  <entry key="quarrel.help.named">Named parameters:</entry>
+  <entry key="quarrel.help.positional">Positional parameters:</entry>
+  <entry key="quarrel.help.named.none">The command does not accept any named arguments.</entry>
+  <entry key="quarrel.help.positional.any">The command accepts any number of positional arguments.</entry>
+  <entry key="quarrel.help.positional.none">The command does not accept any positional arguments.</entry>
+
+  <entry key="quarrel.help.type">Type</entry>
+  <entry key="quarrel.help.default">Default value</entry>
+  <entry key="quarrel.help.alternatives">Alternative names</entry>
+  <entry key="quarrel.help.description.word">Description</entry>
+  <entry key="quarrel.help.syntax">Syntax</entry>
+  <entry key="quarrel.help.cardinality">Cardinality</entry>
+  <entry key="quarrel.help.cardinality.0n">[0, N]; Specify at least once, or use the default.</entry>
+  <entry key="quarrel.help.cardinality.0n.noDefault">[0, N]; Specify zero or more times.</entry>
+  <entry key="quarrel.help.cardinality.1n">[1, N]; Specify at least once, or use the default.</entry>
+  <entry key="quarrel.help.cardinality.1n.noDefault">[1, N]; Specify at least once.</entry>
+  <entry key="quarrel.help.cardinality.1">[1]; Specify exactly once, or use the default.</entry>
+  <entry key="quarrel.help.cardinality.1.noDefault">[1]; Specify exactly once.</entry>
+  <entry key="quarrel.help.cardinality.01">[0, 1]; Specify at most once, or use the default.</entry>
+  <entry key="quarrel.help.cardinality.01.noDefault">[0, 1]; Specify at most once.</entry>
+
+  <entry key="quarrel.errorExpectsOneValue">The parameter expects one value, but more than one was provided.</entry>
+  <entry key="quarrel.errorWrongNumberOfValues">The wrong number of values were provided for a parameter.</entry>
+  <entry key="quarrel.errorSuggestProvideRightNumber">Provide the right number of arguments for the parameter.</entry>
+  <entry key="quarrel.errorSuggestProvideExactlyOne">Provide exactly one value on the command-line.</entry>
+  <entry key="quarrel.errorWrongNumberOfPositionalArguments">The wrong number of positional arguments were provided.</entry>
+  <entry key="quarrel.errorParameterUnparseable">The value supplied for a parameter is unparseable.</entry>
+  <entry key="quarrel.errorSuggestProvideParseable">Provide a parseable value on the command-line.</entry>
+  <entry key="quarrel.errorParameterMissingValue">A parameter is missing a value.</entry>
+  <entry key="quarrel.errorSuggestProvideValue">Provide a value on the command-line.</entry>
+  <entry key="quarrel.errorParameterNoValueConverter">No value converter is available for the parameter.</entry>
+  <entry key="quarrel.errorSuggestRegisterConverter">Register a value converter for the given class.</entry>
+  <entry key="quarrel.errorParameterMultipleSameNames">Multiple parameters declare the same names.</entry>
+  <entry key="quarrel.errorSuggestUniqueNames">Use unique names for parameters.</entry>
+  <entry key="quarrel.errorYieldedCommandUnexpectedly">The specified command path yielded a command before all path elements were consumed.</entry>
+  <entry key="quarrel.errorSuggestRightPath">Specify the name of an existing command.</entry>
+  <entry key="quarrel.errorCommandNonexistent">The specified command does not exist.</entry>
+  <entry key="quarrel.errorIOFile">An error occurred when trying to open/read the given file.</entry>
+
+  <entry key="quarrel.command">Command</entry>
+  <entry key="quarrel.commandFound">Command Found</entry>
+  <entry key="quarrel.error_code">Error Code</entry>
+  <entry key="quarrel.example">Example</entry>
+  <entry key="quarrel.exception">Exception</entry>
+  <entry key="quarrel.expected_count">Expected Count</entry>
+  <entry key="quarrel.file">File</entry>
+  <entry key="quarrel.fullPath">Full Path</entry>
+  <entry key="quarrel.maximum_values">Maximum Values</entry>
+  <entry key="quarrel.minimum_values">Minimum Values</entry>
+  <entry key="quarrel.parameter">Parameter</entry>
+  <entry key="quarrel.provided">Provided</entry>
+  <entry key="quarrel.provided_count">Provided Count</entry>
+  <entry key="quarrel.suggested_action">Suggested Action</entry>
+  <entry key="quarrel.syntax">Syntax</entry>
+  <entry key="quarrel.type">Type</entry>
+</properties>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<div xmlns="http://www.w3.org/1999/xhtml">
+  <ul>
+    <li>
+      Strongly-typed access to command-line arguments, for program correctness.
+    </li>
+    <li>
+      Simple and regular command-line parsing for easily understood command-line interfaces.
+    </li>
+    <li>
+      Automatic generation of "help" and "version" commands for command-line interfaces.
+    </li>
+    <li>
+      Detailed, structured, and localized user-facing error messages for clear
+      explanations as to how to use the command-line interfaces correctly.
+    </li>
+    <li>
+      A small, easily auditable codebase with no use of reflection or annotations.
+    </li>
+    <li>
+      An extensive automated test suite with high coverage.
+    </li>
+    <li>
+      Supplies a restricted form of @ syntax, for storing command-line arguments in files.
+    </li>
+    <li>
+      Fully documented, with usage tutorial.
+    </li>
+    <li>
+      <a href="https://www.osgi.org/">OSGi</a>-ready
+    </li>
+    <li>
+      <a href="https://en.wikipedia.org/wiki/Java_Platform_Module_System">JPMS</a>-ready
+    </li>
+    <li>
+      ISC license.
+    </li>
+  </ul>
+</div>

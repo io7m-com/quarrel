@@ -1,0 +1,73 @@
+quarrel: usage: cmd-everything [named-arguments ...] <x> <y> <z>
+
+  A command with everything.
+
+  Named parameters:
+    --0file
+      Description       : A file.
+      Type              : String
+      Cardinality       : [0, 1]; Specify at most once.
+      Syntax            : <any sequence of characters>
+      Alternative names : -x, -y, -z
+    --1number
+      Description       : A number.
+      Type              : Integer
+      Cardinality       : [0, 1]; Specify at most once, or use the default.
+      Default value     : 23
+      Syntax            : 0 | [1-9][0-9]+
+  * --2number-opt
+      Description       : A number.
+      Type              : Integer
+      Cardinality       : [1]; Specify exactly once.
+      Syntax            : 0 | [1-9][0-9]+
+    --3date
+      Description       : A date.
+      Type              : OffsetDateTime
+      Cardinality       : [1]; Specify exactly once, or use the default.
+      Default value     : 2023-05-12T11:11:22.138315473Z
+      Syntax            : yyyy-mm-ddThh:mm:ss+zz:zz (ISO 8601)
+    --4net
+      Description       : A network address.
+      Type              : InetAddress
+      Cardinality       : [0, N]; Specify zero or more times.
+      Syntax            : Hostname, IPv4 or IPv6 address (RFC 2732)
+    --5uuid
+      Description       : A UUID.
+      Type              : UUID
+      Cardinality       : [0, N]; Specify at least once, or use the default.
+      Default value     : [5552215f-253f-4391-bd07-7d87f57572ce]
+      Syntax            : [0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}
+    --6path
+      Description       : A path.
+      Type              : Path
+      Cardinality       : [1, N]; Specify at least once.
+      Syntax            : <platform-specific path syntax>
+    --7uri
+      Description       : A URI.
+      Type              : URI
+      Cardinality       : [1, N]; Specify at least once, or use the default.
+      Default value     : urn:x
+      Syntax            : RFC 3986 URI
+
+  Positional parameters:
+    x
+      Type              : Integer
+      Description       : An x.
+      Syntax            : 0 | [1-9][0-9]+
+    y
+      Type              : Integer
+      Description       : A y.
+      Syntax            : 0 | [1-9][0-9]+
+    z
+      Type              : Integer
+      Description       : A z.
+      Syntax            : 0 | [1-9][0-9]+
+
+  Farmer Bertram was in bed when the stranger entered, having had a fall
+  from his horse while hunting.
+
+  The horseman said his business was of such pressing importance that he
+  must see the farmer at once.
+
+  Bertram recognized the name, and directed his old servant to admit the
+  stranger to his chamber at once.

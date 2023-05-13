@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Section xmlns="urn:com.io7m.structural:8:0"
+         xmlns:xi="http://www.w3.org/2001/XInclude"
+         id="cfec931d-7f62-43b8-b3c5-3ea88958f313"
+         title="Example Application">
+
+  <Paragraph>
+    The full sources of the example application are as follows:
+  </Paragraph>
+
+  <FormalItem title="ExCat.java">
+    <Verbatim><xi:include href="com/io7m/quarrel/example/ExCat.java" parse="text"/></Verbatim>
+  </FormalItem>
+  <FormalItem title="ExCmd0.java">
+    <Verbatim><xi:include href="com/io7m/quarrel/example/ExCmd0.java" parse="text"/></Verbatim>
+  </FormalItem>
+  <FormalItem title="ExCow.java">
+    <Verbatim><xi:include href="com/io7m/quarrel/example/ExCow.java" parse="text"/></Verbatim>
+  </FormalItem>
+  <FormalItem title="ExDog.java">
+    <Verbatim><xi:include href="com/io7m/quarrel/example/ExDog.java" parse="text"/></Verbatim>
+  </FormalItem>
+  <FormalItem title="ExEverything.java">
+    <Verbatim><xi:include href="com/io7m/quarrel/example/ExEverything.java" parse="text"/></Verbatim>
+  </FormalItem>
+  <FormalItem title="ExMeta.java">
+    <Verbatim><xi:include href="com/io7m/quarrel/example/ExMeta.java" parse="text"/></Verbatim>
+  </FormalItem>
+  <FormalItem title="ExStrings.java">
+    <Verbatim><xi:include href="com/io7m/quarrel/example/ExStrings.java" parse="text"/></Verbatim>
+  </FormalItem>
+  <FormalItem title="Main.java">
+    <Verbatim><xi:include href="com/io7m/quarrel/example/Main.java" parse="text"/></Verbatim>
+  </FormalItem>
+
+</Section>

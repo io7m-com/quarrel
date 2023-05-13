@@ -1,0 +1,776 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Section xmlns="urn:com.io7m.structural:8:0"
+         xmlns:xi="http://www.w3.org/2001/XInclude"
+         id="3610cd85-3725-4010-a8c3-948f36882969"
+         title="Usage">
+
+  <Subsection title="Overview">
+    <Paragraph>
+      The <Term type="package">quarrel</Term> package provides a simple API for producing command-line applications.
+      Using the package consists of the following steps:
+    </Paragraph>
+
+    <FormalItem title="Usage Steps">
+      <ListOrdered>
+        <Item>
+          Provide one implementation of
+          <Term type="type">QCommandType</Term>
+          for each of the commands exposed by your application.
+        </Item>
+        <Item>
+          Create an instance of <Term type="type">QApplicationType</Term>, registering each of the commands (or,
+          optionally, grouping them into command groups). The application instance must also be provided metadata such
+          as the name and version of the application.
+        </Item>
+        <Item>
+          Pass arguments to the application instance and either execute the returned command, or display the returned
+          error information.
+        </Item>
+      </ListOrdered>
+    </FormalItem>
+  </Subsection>
+
+  <Subsection title="Design"
+              id="23fc4eae-63a4-4123-8b7e-7c6c1ff211fe">
+    <Paragraph>
+      The <Term type="package">quarrel</Term> package does not intend to provide a fully generic command-line parser
+      that can emulate the argument parsing style of every application ever conceived. It is patterned on a strict
+      subset of the kind of command-line parsing used by programs such as
+      <LinkExternal target="https://podman.io/">podman</LinkExternal>.
+    </Paragraph>
+    <Paragraph>
+      Briefly, the command line interface is divided into discrete
+      <Term type="term">commands</Term>. Commands may be grouped into
+      <Term type="term">command groups</Term>. A command accepts a possibly empty list of <Term type="term">named
+      parameters</Term>, followed by a possibly empty list of <Term type="term">positional parameters</Term>. Named
+      parameters have a configurable
+      <Term type="term">cardinality</Term>; a named parameter can be declared as "must be specified exactly one", "may
+      be specified any number of times", "must be specified at least once", and so on. A named parameter must be
+      supplied with a
+      <Term type="term">value</Term>
+      at run-time, but can also be specified to have a given
+      <Term type="term">default value</Term>
+      if one is not provided. Both positional and named parameters are
+      <Term type="term">typed</Term>, with values being parsed by looking up a parser in a directory
+      of <Term type="term">value converters</Term>. The package comes with a useful set of
+      <Term type="term">value converters</Term>
+      for many of the standard Java types, but new converters can be registered by the application developer.
+    </Paragraph>
+    <Paragraph>
+      The <Term type="package">quarrel</Term> package provides an application abstraction that, given metadata such as
+      the application name and version, automatically provides useful commands such as
+      <Link target="7479e51b-fce4-43c5-a0f6-aae2c60a68bd">help</Link>
+      and
+      <Link target="e7988df6-0443-4a22-a886-accd1ff41992">version</Link>
+      to relieve the application developer of the burden of having to implement such standard commands. The application
+      abstraction also handles the dispatching of arguments to a tree of nested commands/command groups.
+    </Paragraph>
+    <Paragraph>
+      The <Term type="package">quarrel</Term> package also provides detailed, localized, and structured error reporting
+      to assist users of command-line applications built using <Term type="package">quarrel</Term>. For example, if the
+      user fails to provide a required named argument, or provides a value that cannot be parsed as a value of the
+      argument's declared type, they will receive an error message such as the following:
+    </Paragraph>
+    <FormalItem title="Example Error Messages">
+      <Verbatim><![CDATA[
+quarrel: ERROR: The wrong number of values were provided for a parameter.
+  Command          : example
+  Error Code       : parameter-cardinality
+  Maximum Values   : 1
+  Minimum Values   : 1
+  Parameter        : --number
+  Provided Count   : 0
+  Suggested Action : Provide the right number of arguments for the parameter.
+
+quarrel: ERROR: The value supplied for a parameter is unparseable.
+  Command          : example
+  Error Code       : parameter-unparseable-value
+  Parameter        : --number
+  Provided         : x
+  Suggested Action : Provide a parseable value on the command-line.
+  Syntax           : 0 | [1-9][0-9]+
+  Type             : java.lang.Integer
+]]></Verbatim>
+    </FormalItem>
+  </Subsection>
+
+  <Subsection title="Implementing QCommandType"
+              id="ca421c5a-5159-4914-9074-edbd70a0df10">
+    <Subsection title="Overview">
+      <Paragraph>
+        Application programmers must provide an implementation of the
+        <Term type="type">QCommandType</Term>
+        interface for each command in the application.
+      </Paragraph>
+      <Paragraph>
+        In order to implement the <Term type="type">QCommandType</Term> interface, the following pieces of information
+        must be provided:
+      </Paragraph>
+      <FormalItem title="QCommandType Requirements">
+        <ListUnordered>
+          <Item>
+            The
+            <Link target="7fa3b198-86b8-4006-badb-aac746afd994">command metadata</Link>
+            such as the name of the command, the short one-line description of the command for help messages, the
+            optional long description of the command, and etc.
+          </Item>
+          <Item>
+            The set of
+            <Link target="a5e7ef38-e41b-41b2-b100-4241c7bb2b26">named parameters</Link>
+            the command accepts, if any.
+          </Item>
+          <Item>
+            The set of
+            <Link target="66bcd3f7-3331-4b76-8295-5ad88687b9cf">positional parameters</Link>
+            the command accepts, if any.
+          </Item>
+          <Item>
+            The actual
+            <Link target="92ab6878-6630-4d16-ad34-b185d7557b12">code executed</Link>
+            when the command is invoked.
+          </Item>
+        </ListUnordered>
+      </FormalItem>
+    </Subsection>
+
+    <Subsection title="Command Metadata"
+                id="7fa3b198-86b8-4006-badb-aac746afd994">
+      <Paragraph>
+        The <Term type="term">metadata</Term> for the command consists of the name of the command, a short one-line
+        description of the command used in generated
+        <Link target="7479e51b-fce4-43c5-a0f6-aae2c60a68bd">help messages</Link>, and an optional long description also
+        used in help messages. The metadata must be returned by the implementation of the
+        <Term type="function">metadata</Term>
+        method:
+      </Paragraph>
+      <FormalItem title="Metadata method">
+        <Verbatim><![CDATA[
+@Override
+public QCommandMetadata metadata()
+{
+  return new QCommandMetadata(
+    "cat",
+    new QConstant("Hear a cat speak."),
+    Optional.empty()
+  );
+}
+]]></Verbatim>
+      </FormalItem>
+      <Paragraph>
+        Localizable strings such as the descriptions are specified as values of the
+        <Link target="43caeda8-55b6-4ff3-9264-0da513ae3304">QStringsType</Link>
+        type so that the <Term type="package">quarrel</Term> package knows whether to try to look up their value in
+        resources, or use their string constant values directly. Command names are not localizable, because having a
+        different command-line interface depending on locale would create severe problems when using applications from
+        scripts.
+      </Paragraph>
+      <Paragraph>
+        Command names cannot begin with the <Term type="constant">@</Term> character, because this would conflict with
+        the provided <Link target="20496573-aa57-4a1e-850c-573dab4ff303">@ syntax</Link>.
+      </Paragraph>
+      <Paragraph>
+        Command names cannot contain any characters in the Unicode <Term type="expression">\p{Z}</Term> set. This
+        includes any kind of whitespace or invisible separator.
+      </Paragraph>
+      <Paragraph>
+        Command names must be non-empty.
+      </Paragraph>
+    </Subsection>
+
+    <Subsection title="Named Parameters"
+                id="a5e7ef38-e41b-41b2-b100-4241c7bb2b26">
+      <Paragraph>
+        A command may accept zero or more <Term type="term">named parameters</Term>. A command implementation must
+        return zero or more parameter declarations from the
+        <Term type="function">onListNamedParameters</Term>
+        method. The values returned are used later by the implemented <Link target="92ab6878-6630-4d16-ad34-b185d7557b12">
+        onExecute
+      </Link> method to retrieve the parsed values supplied to those parameters.
+      </Paragraph>
+      <Paragraph>
+        A named parameter is an instance of the sealed <Term type="type">QParameterNamedType</Term>. Every named
+        parameter has a name, a type, and descriptive metadata used for help messages. Named parameters may also declare <Term type="term">
+        alternative names
+      </Term> (for example, to provide short versions of parameters such as <Term type="constant">-f</Term> in addition
+        to <Term type="constant">--file</Term>). Parameter names must be unique within a given command (including
+        alternative names). Each of the subclasses of <Term type="type">QParameterNamedType</Term> encodes a different
+        parameter <Term type="term">cardinality</Term>:
+      </Paragraph>
+      <FormalItem title="Parameter Cardinality"
+                  id="82a18dfa-a7e9-4c6b-b34f-5e99d5981776">
+        <Table type="genericTable">
+          <Columns>
+            <Column>Type</Column>
+            <Column>Cardinality</Column>
+          </Columns>
+          <Row>
+            <Cell>
+              <Term type="type">QParameterNamed0N</Term>
+            </Cell>
+            <Cell>The parameter may be specified zero or more times, accumulating values into a list.</Cell>
+          </Row>
+          <Row>
+            <Cell>
+              <Term type="type">QParameterNamed1</Term>
+            </Cell>
+            <Cell>The parameter must be specified exactly once.</Cell>
+          </Row>
+          <Row>
+            <Cell>
+              <Term type="type">QParameterNamed1N</Term>
+            </Cell>
+            <Cell>The parameter must be specified at least once, accumulating values into a list.</Cell>
+          </Row>
+          <Row>
+            <Cell>
+              <Term type="type">QParameterNamed01</Term>
+            </Cell>
+            <Cell>The parameter may be specified at most once, yielding an optional value.</Cell>
+          </Row>
+        </Table>
+      </FormalItem>
+      <FormalItem title="onListNamedParameters method">
+        <Verbatim><![CDATA[
+private static final QParameterNamed1<Path> FILE =
+  new QParameterNamed1<>(
+    "--file",
+    List.of("-f"),
+    new QConstant("The input file."),
+    Optional.empty(),
+    Path.class
+  );
+
+private static final QParameterNamed01<Integer> COUNT =
+  new QParameterNamed01<>(
+    "--count",
+    List.of(),
+    new QConstant("The number of items to process."),
+    Optional.of(100),
+    Integer.class
+  );
+
+@Override
+public List<QParameterNamedType<?>> onListNamedParameters()
+{
+  return List.of(FILE, COUNT);
+}
+]]></Verbatim>
+      </FormalItem>
+      <Paragraph>
+        A named parameter may have a value of any type for which there is an appropriate
+        <Link target="2ac39c01-3dc1-4441-8753-acaba6fdc23b">value converter</Link>
+        registered.
+      </Paragraph>
+      <Paragraph>
+        Parameter names cannot begin with the <Term type="constant">@</Term> character, because this would conflict with
+        the provided <Link target="20496573-aa57-4a1e-850c-573dab4ff303">@ syntax</Link>.
+      </Paragraph>
+      <Paragraph>
+        Parameter names cannot contain any characters in the Unicode <Term type="expression">\p{Z}</Term> set. This
+        includes any kind of whitespace or invisible separator.
+      </Paragraph>
+      <Paragraph>
+        Parameter names must be non-empty.
+      </Paragraph>
+    </Subsection>
+
+    <Subsection title="Positional Parameters"
+                id="66bcd3f7-3331-4b76-8295-5ad88687b9cf">
+      <Paragraph>
+        A command may accept zero or more <Term type="term">positional parameters</Term>. A command implementation must
+        return a value of the <Term type="type">QParametersPositionalType</Term> type from the implemented
+        <Term type="function">onListPositionalParameters</Term>
+        method that indicates how the command accepts positional parameters:
+      </Paragraph>
+      <FormalItem title="Parameter Positionals">
+        <Table type="genericTable">
+          <Columns>
+            <Column>Type</Column>
+            <Column>Meaning</Column>
+          </Columns>
+          <Row>
+            <Cell>
+              <Term type="type">QParametersPositionalAny</Term>
+            </Cell>
+            <Cell>Any sequence of positional parameters are acceptable. Essentially, no parsing occurs.</Cell>
+          </Row>
+          <Row>
+            <Cell>
+              <Term type="type">QParametersPositionalNone</Term>
+            </Cell>
+            <Cell>No positional parameters are allowed. Passing anything results in an error.</Cell>
+          </Row>
+          <Row>
+            <Cell>
+              <Term type="type">QParametersPositionalTyped</Term>
+            </Cell>
+            <Cell>The command requires the exact sequence of given parameters.</Cell>
+          </Row>
+        </Table>
+      </FormalItem>
+      <Paragraph>
+        As with <Link target="a5e7ef38-e41b-41b2-b100-4241c7bb2b26">named parameters</Link>, positional parameters must
+        have names and types, although the names are only used for documentation and are otherwise ignored. If a
+        sequence of positional parameters are provided, all parameters must be supplied on the command-line; positional
+        parameters cannot be optional - use named parameters for optional parameters.
+      </Paragraph>
+      <FormalItem title="onListNamedParameters method (None)">
+        <Verbatim><![CDATA[
+@Override
+public QParametersPositionalType onListPositionalParameters()
+{
+  return new QParametersPositionalNone();
+}
+]]></Verbatim>
+      </FormalItem>
+      <FormalItem title="onListNamedParameters method (Any)">
+        <Verbatim><![CDATA[
+@Override
+public QParametersPositionalType onListPositionalParameters()
+{
+  return new QParametersPositionalAny();
+}
+]]></Verbatim>
+      </FormalItem>
+      <FormalItem title="onListNamedParameters method (Typed)">
+        <Verbatim><![CDATA[
+private static final QParameterPositional<Path> INPUT =
+  new QParameterPositional<>(
+    "input",
+    new QConstant("The input file."),
+    Path.class
+  );
+
+private static final QParameterPositional<Path> OUTPUT =
+  new QParameterPositional<>(
+    "output",
+    new QConstant("The output file."),
+    Path.class
+  );
+
+@Override
+public QParametersPositionalType onListPositionalParameters()
+{
+  return new QParametersPositionalTyped(List.of(INPUT, OUTPUT));
+}
+]]></Verbatim>
+      </FormalItem>
+      <Paragraph>
+        A positional parameter may have a value of any type for which there is an appropriate
+        <Link target="2ac39c01-3dc1-4441-8753-acaba6fdc23b">value converter</Link>
+        registered.
+      </Paragraph>
+      <Paragraph>
+        Parameter names cannot begin with the <Term type="constant">@</Term> character, because this would conflict with
+        the provided <Link target="20496573-aa57-4a1e-850c-573dab4ff303">@ syntax</Link>.
+      </Paragraph>
+      <Paragraph>
+        Parameter names cannot contain any characters in the Unicode <Term type="expression">\p{Z}</Term> set. This
+        includes any kind of whitespace or invisible separator.
+      </Paragraph>
+      <Paragraph>
+        Parameter names must be non-empty.
+      </Paragraph>
+    </Subsection>
+
+    <Subsection title="Executable"
+                id="92ab6878-6630-4d16-ad34-b185d7557b12">
+      <Paragraph>
+        The command implementation must implement the
+        <Term type="function">onExecute</Term>
+        method. This method contains the actual code executed by the application after the command is invoked and all
+        argument parsing has succeeded. The method is passed a value of type <Term type="function">QCommandContextType
+      </Term> that provides access to:
+      </Paragraph>
+      <FormalItem title="Command Context">
+        <ListUnordered>
+          <Item>
+            The <Term type="class">PrintWriter</Term> output to which the command can write output. In typical
+            application, this is attached to the <Term type="term">standard output</Term>, but commands should use this
+            instead of writing to standard output in order to facilitate unit testing of the commands.
+          </Item>
+          <Item>
+            The values of the parsed named parameters (if any).
+          </Item>
+          <Item>
+            The values of the parsed positional parameters.
+          </Item>
+        </ListUnordered>
+      </FormalItem>
+      <Paragraph>
+        To obtain access to the values of named parameters, the application code can call any of the various context
+        methods, passing in the original parameter declarations. For example:
+      </Paragraph>
+      <FormalItem title="Named Parameter Values">
+        <Verbatim><![CDATA[
+@Override
+public QCommandStatus onExecute(
+  final QCommandContextType context)
+{
+  final var w = context.output();
+
+  final Path file = context.parameterValue(FILE);
+  w.println(file);
+
+  final Integer count = context.parameterValue(COUNT);
+  w.println(count);
+
+  final Path input = context.parameterValue(INPUT);
+  w.println(input);
+
+  final Path output = context.parameterValue(OUTPUT);
+  w.println(output);
+
+  w.flush();
+  return SUCCESS;
+}
+]]></Verbatim>
+      </FormalItem>
+      <Paragraph>
+        The command context contains methods specialized to each
+        <Link target="82a18dfa-a7e9-4c6b-b34f-5e99d5981776">cardinality subclass</Link>
+        in order to return values of an appropriate collection type without requiring the programmer to do any unsafe
+        casting. For example a parameter declared with a value of type <Term type="type">T</Term> with a cardinality of
+        "exactly one" will return a value of <Term type="type">T</Term> directly. However, a parameter declared with a
+        value of type <Term type="type">T</Term> with a cardinality of "zero or more times" will return a value
+        of <Term type="type">List&lt;T&gt;</Term>.
+      </Paragraph>
+      <Paragraph>
+        The <Term type="function">onExecute</Term> method is defined to allow the raising of any subclass
+        of <Term type="type">Exception</Term>, but is also defined to require the returning of a value of
+        type <Term type="type">QCommandStatus</Term>. The value
+        <Term type="type">QCommandStatus.SUCCESS</Term>
+        indicates that the command succeeded, and the value
+        <Term type="type">QCommandStatus.FAILURE</Term>
+        indicates that the command failed. This may seem slightly counterintuitive, after all raising an exception
+        clearly indicates failure. However, consider the standard POSIX utilities such as
+        <Term type="command">grep</Term>; the <Term type="command">grep</Term> command returns a non-zero exit code on
+        the command line if the input did not match a given regular expression. The command did not "fail" in a way that
+        would justify raising an exception (such as the user asking
+        <Term type="command">grep</Term>
+        to open a file that turned out not to exist), but it did return some feedback that justified adjusting the exit
+        code such that scripts can easily observe the results without having to parse the command's output.
+      </Paragraph>
+    </Subsection>
+  </Subsection>
+
+  <Subsection title="QStrings"
+              id="43caeda8-55b6-4ff3-9264-0da513ae3304">
+    <Paragraph>
+      The <Term type="package">quarrel</Term> package has to accept and display arbitrary strings returned from code
+      implemented by users. In order to properly support localization, the package needs to know whether it needs to
+      localize a given returned string. The <Term type="type">QStringType</Term> can refer to either of the following
+      types:
+    </Paragraph>
+    <FormalItem title="QString Types">
+      <Table type="genericTable">
+        <Columns>
+          <Column>Type</Column>
+          <Column>Behaviour</Column>
+        </Columns>
+        <Row>
+          <Cell>
+            <Term type="type">QConstant</Term>
+          </Cell>
+          <Cell>The value of the constant is used directly, without any kind of localization.</Cell>
+        </Row>
+        <Row>
+          <Cell>
+            <Term type="type">QLocalize</Term>
+          </Cell>
+          <Cell>The value will be localized from the application's resources. The value will ultimately be used as a key
+            to index into a <Term type="type">ResourceBundle</Term>.
+          </Cell>
+        </Row>
+      </Table>
+    </FormalItem>
+  </Subsection>
+
+  <Subsection title="Creating A QApplicationType"
+              id="77c1c4f1-8ef7-4850-95f0-4589b65a8b79">
+    <Paragraph>
+      The <Term type="package">quarrel</Term> package provides a top-level application type that acts as a container for
+      a tree of commands and command groups. Application developers should instantiate a value of type <Term type="type">
+      QApplicationType
+    </Term> using the provided mutable builder type.
+    </Paragraph>
+    <Paragraph>
+      First, place the application metadata into a value of type
+      <Term type="type">QApplicationMetadata</Term>:
+    </Paragraph>
+    <FormalItem title="Metadata">
+      <Verbatim><![CDATA[
+final var metadata =
+  new QApplicationMetadata(
+    "quarrel",
+    "com.io7m.quarrel.example",
+    "1.2.0",
+    "eacd59a2",
+    "The Quarrel example application.",
+    Optional.of(URI.create("https://www.io7m.com/software/quarrel/"))
+  );
+]]></Verbatim>
+    </FormalItem>
+    <Paragraph>
+      Create an application builder and register some commands, and set the application's string resources (used to
+      localize the strings returned by the application's commands):
+    </Paragraph>
+    <FormalItem title="Builder">
+      <Verbatim><![CDATA[
+final ResourceBundle resources = ...;
+
+final var builder = QApplication.builder(metadata);
+builder.setApplicationResources(resources);
+builder.addCommand(new Command0());
+builder.addCommand(new Command1());
+builder.addCommand(new Command2());
+]]>
+      </Verbatim>
+    </FormalItem>
+    <Paragraph>
+      For each <Link target="43caeda8-55b6-4ff3-9264-0da513ae3304">QString</Link> the
+      <Term type="package">quarrel</Term>
+      package encounters, it first tries to localize the string using the application's provided resource bundle. If the
+      string does not exist there, it tries to localize the string using its own internal resource bundle.
+    </Paragraph>
+    <Paragraph>
+      Optionally, commands can be placed into groups:
+    </Paragraph>
+    <FormalItem title="Groups">
+      <Verbatim><![CDATA[
+final var group =
+  builder.createCommandGroup(
+    new QCommandMetadata(
+      "animal",
+      new QConstant("Hear an animal speak."),
+      Optional.of(new QConstant("A long description."))
+    ));
+
+group.addCommand(new CommandCat());
+group.addCommand(new CommandDog());
+group.addCommand(new CommandCow());
+]]>
+      </Verbatim>
+    </FormalItem>
+    <Paragraph>
+      Groups and commands form a tree structure, with the root of the tree effectively being an anonymous command group.
+      The command-line arguments passed to an application instance are consumed left to right in order to walk the tree
+      and locate a specific command. For example, if the given command line arguments are <Term type="expression">podman
+      system connection list -q</Term>, assuming that the first argument <Term type="expression">"podman"</Term> is
+      stripped away
+      <LinkFootnote target="72b4c6af-0dc5-4757-9559-008aa70c1f18"/>, then the application receives the
+      arguments <Term type="expression">"system" "connection" "list" "-q"</Term>. The application will look for a
+      top-level command or group named
+      <Term type="expression">"system"</Term>. If <Term type="expression">"system"</Term> names a command, the command
+      will be passed the arguments
+      <Term type="expression">"connection" "list" "-q"</Term>
+      and the search terminates. If <Term type="expression">"system"</Term> names a command group, then the command
+      group will be inspected for a command or group named <Term type="expression">"connection"</Term>. This procedure
+      continues recursively until either a command is located, a group doesn't contain the given name (resulting in an
+      error), or the argument list is exhausted (resulting in an error).
+    </Paragraph>
+
+    <Paragraph id="0790cca0-63ce-468f-8f5c-d663535db0ff">
+      Finally, build an application. Application instances are immutable.
+    </Paragraph>
+    <FormalItem title="Groups">
+      <Verbatim><![CDATA[
+final var application = builder.build();
+]]>
+      </Verbatim>
+    </FormalItem>
+  </Subsection>
+
+  <Subsection title="Calling The QApplicationType"
+              id="3fb32d01-f83c-4d25-8e02-b4b0710a3322">
+    <Paragraph>
+      Given the application instance
+      <Link target="0790cca0-63ce-468f-8f5c-d663535db0ff">constructed</Link>
+      previously, the instance can be passed a set of command line arguments. The application will either raise an
+      exception indicating that arguments could not be parsed or were incorrect in some manner, or it will return a
+      command context. The command context can be used to execute the parsed command.
+    </Paragraph>
+    <FormalItem title="Execute">
+      <Verbatim><![CDATA[
+List<String> arguments = ...;
+
+try {
+  var cmd = application.parse(arguments);
+  return result = cmd.execute();
+} catch (final Exception e) {
+  // Log errors
+  return QCommandStatus.FAILURE;
+}
+]]>
+      </Verbatim>
+    </FormalItem>
+    <Paragraph>
+      The <Term type="package">quarrel</Term> package uses a <Term type="type">QException</Term> type containing
+      structured error information to produce useful error messages. The
+      <Term type="type">QApplicationType</Term>
+      type contains a convenience method named <Term type="function">run</Term> that effectively implements the above
+      code with some provided error formatting. Given an
+      <LinkExternal target="https://slf4j.org">SLF4J</LinkExternal>
+      logger, the <Term type="function">run</Term> method can reduce the above code to:
+    </Paragraph>
+    <FormalItem title="Run">
+      <Verbatim><![CDATA[
+Logger LOG = ... ;
+
+return application.run(LOG, arguments)
+]]>
+      </Verbatim>
+    </FormalItem>
+
+    <Paragraph>
+      Executing the example program with no arguments yields a generated usage page:
+    </Paragraph>
+
+    <FormalItem title="Example Usage">
+      <Verbatim><![CDATA[
+$ quarrel
+quarrel: usage: quarrel [command] [arguments ...]
+
+  The Quarrel example application.
+
+  Use the "help" command to examine specific commands:
+
+    $ quarrel help help.
+
+  Command-line arguments can be placed one per line into a file, and
+  the file can be referenced using the @ symbol:
+
+    $ echo help > file.txt
+    $ echo help >> file.txt
+    $ quarrel @file.txt
+
+  Commands:
+    animal      Hear an animal speak.
+    cmd-0       A command that does nothing.
+    cmd-1       A command that does nothing.
+    cmd-1       A command that does nothing.
+    help        Show usage information for a command.
+    version     Show the application version.
+
+  Documentation:
+    https://www.io7m.com/software/quarrel/
+
+]]></Verbatim>
+    </FormalItem>
+  </Subsection>
+
+  <Subsection title="Hidden Commands">
+    <Paragraph>
+      The <Term type="type">QCommandType</Term> interface contains a default method
+      <Term type="function">isHidden</Term>
+      that, if implemented to return <Term type="constant">true</Term>, will cause the command implementing it to be
+      hidden in the listings produced by the
+      <Link target="7479e51b-fce4-43c5-a0f6-aae2c60a68bd">help</Link>
+      command. This can be useful if an application contains internal commands that are not intended to be user-facing.
+    </Paragraph>
+    <Paragraph>
+      The default behaviour for the method is to return <Term type="constant">false</Term>, thus making commands
+      visible.
+    </Paragraph>
+  </Subsection>
+
+  <Subsection title="The help command"
+              id="7479e51b-fce4-43c5-a0f6-aae2c60a68bd">
+    <Paragraph>
+      The <Term type="command">help</Term> command is registered at the top level of the resulting application and can
+      produce detailed usage messages when given the name of an existing command. For example, the
+      <Term type="command">cmd-everything</Term>
+      command from the
+      <Link target="cfec931d-7f62-43b8-b3c5-3ea88958f313">example application</Link>
+      yields the following output when inspected using
+      <Term type="command">help cmd-everything</Term>:
+    </Paragraph>
+    <FormalItem title="help cmd-everything">
+      <Verbatim>
+        <xi:include href="help-cmd-everything.txt"
+                    parse="text"/>
+      </Verbatim>
+    </FormalItem>
+  </Subsection>
+
+  <Subsection title="The version command"
+              id="e7988df6-0443-4a22-a886-accd1ff41992">
+    <Paragraph>
+      The <Term type="command">version</Term> command is registered at the top level of the resulting application and
+      prints version information based on the metadata provided to the application instance. For example, the
+      <Term type="command">version</Term>
+      command from the
+      <Link target="cfec931d-7f62-43b8-b3c5-3ea88958f313">example application</Link>
+      yields the following output:
+    </Paragraph>
+    <FormalItem title="version">
+      <Verbatim>com.io7m.quarrel.example 1.2.0 eacd59a2</Verbatim>
+    </FormalItem>
+    <Paragraph>
+      The command outputs the application ID, followed by a space, followed by the version number, followed by a space,
+      followed by the build identifier, followed by a newline.
+    </Paragraph>
+  </Subsection>
+
+  <Subsection title="@ Syntax"
+              id="20496573-aa57-4a1e-850c-573dab4ff303">
+    <Paragraph>
+      If the first character of the first argument passed to the application is
+      <Term type="constant">@</Term>, then the argument (minus the
+      <Term type="constant">@</Term>
+      character) is interpreted as a filename containing command-line arguments for the application.
+    </Paragraph>
+    <Paragraph>
+      The file named using <Term type="constant">@</Term> is read line-by-line. Lines beginning with the character
+      <Term type="constant">#</Term>
+      are ignored. Leading and trailing whitespace is trimmed from each line, and empty/blank lines are ignored. After
+      all lines have been read, each line is interpreted as being a single argument, and the resulting list of arguments
+      is prepended onto the arguments following the
+      <Term type="constant">@</Term>
+      argument.
+    </Paragraph>
+  </Subsection>
+
+  <Subsection title="Value Converters"
+              id="2ac39c01-3dc1-4441-8753-acaba6fdc23b">
+    <Paragraph>
+      A <Term type="term">value converter</Term> is a class that can convert values to and from strings. Essentially,
+      they combine a parsing function with a serialization function, and also allow for returning some descriptive
+      information such as the expected syntax of string values. Value converters are collected into a value converter
+      directory, represented by an instance of the
+      <Term type="type">QValueConverterDirectoryType</Term>
+      type. The directory can be thought of as a map from Java <Term type="type">Class</Term> values to values of
+      type <Term type="type">QValueConverterType</Term>.
+    </Paragraph>
+    <Paragraph>
+      The <Term type="package">quarrel</Term> package includes a standard directory covering many of the scalar types
+      within the JDK. The list includes but is not necessarily limited to:
+    </Paragraph>
+    <FormalItem title="Standard Types">
+      <Verbatim><![CDATA[
+java.lang.Boolean
+java.lang.Double
+java.lang.Float
+java.lang.Integer
+java.lang.Long
+java.lang.String
+java.math.BigDecimal
+java.math.BigInteger
+java.net.InetAddress
+java.net.URI
+java.nio.file.Path
+java.time.Duration
+java.time.OffsetDateTime
+java.util.UUID
+]]>
+      </Verbatim>
+    </FormalItem>
+  </Subsection>
+
+  <Footnote id="72b4c6af-0dc5-4757-9559-008aa70c1f18">
+    As it is the name of the program, and this is not present in the argument array passed to the
+    <Term type="function">main</Term>function in Java.
+  </Footnote>
+
+</Section>
