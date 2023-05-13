@@ -36,6 +36,7 @@ import java.net.URI;
 import java.net.UnknownHostException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.OffsetDateTime;
@@ -151,6 +152,27 @@ public final class QValueConverterDictionaryTest
     final var c =
       QValueConverterDirectory.core()
         .converterFor(Boolean.class)
+        .orElseThrow();
+
+    assertEquals(x, c.convertFromString(c.convertToString(x)));
+    assertEquals(
+      c.exampleValue(),
+      c.convertFromString(c.convertToString(c.exampleValue()))
+    );
+
+    assertThrows(QException.class, () -> {
+      c.convertFromString("unparseable");
+    });
+  }
+
+  @Property
+  public void testEnum0(
+    final @ForAll StandardCopyOption x)
+    throws QException
+  {
+    final var c =
+      QValueConverterDirectory.core()
+        .converterFor(StandardCopyOption.class)
         .orElseThrow();
 
     assertEquals(x, c.convertFromString(c.convertToString(x)));

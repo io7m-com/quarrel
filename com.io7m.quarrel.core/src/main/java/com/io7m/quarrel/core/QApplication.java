@@ -16,17 +16,16 @@
 
 package com.io7m.quarrel.core;
 
-import com.io7m.quarrel.core.QStringType.QLocalize;
-import com.io7m.quarrel.core.internal.QCommandApplicationUsage;
-import com.io7m.quarrel.core.internal.QCommandContext;
-import com.io7m.quarrel.core.internal.QCommandHelp;
 import com.io7m.quarrel.core.QCommandTreeResolver.QResolutionErrorDoesNotExist;
 import com.io7m.quarrel.core.QCommandTreeResolver.QResolutionOKCommand;
 import com.io7m.quarrel.core.QCommandTreeResolver.QResolutionOKGroup;
 import com.io7m.quarrel.core.QCommandTreeResolver.QResolutionRoot;
+import com.io7m.quarrel.core.QStringType.QLocalize;
+import com.io7m.quarrel.core.internal.QCommandApplicationUsage;
+import com.io7m.quarrel.core.internal.QCommandContext;
+import com.io7m.quarrel.core.internal.QCommandHelp;
 import com.io7m.quarrel.core.internal.QCommandVersion;
 import com.io7m.quarrel.core.internal.QEmptyResources;
-import com.io7m.quarrel.core.internal.QLocalization;
 import com.io7m.quarrel.core.internal.QStrings;
 
 import java.io.IOException;
@@ -62,7 +61,7 @@ public final class QApplication implements QApplicationType
   private final ResourceBundle applicationResources;
   private final ResourceBundle internalResources;
   private final QCommandParsers parsers;
-  private final QLocalization localization;
+  private final QLocalizationType localization;
 
   private QApplication(
     final PrintWriter inWriter,
@@ -87,7 +86,10 @@ public final class QApplication implements QApplicationType
     this.parsers =
       new QCommandParsers();
     this.localization =
-      new QLocalization(inInternalResources, inApplicationResources);
+      QLocalization.create(
+        inInternalResources,
+        inApplicationResources
+      );
   }
 
   /**

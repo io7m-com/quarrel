@@ -22,6 +22,7 @@ import com.io7m.quarrel.core.converters.QVCBigInteger;
 import com.io7m.quarrel.core.converters.QVCBoolean;
 import com.io7m.quarrel.core.converters.QVCDouble;
 import com.io7m.quarrel.core.converters.QVCDuration;
+import com.io7m.quarrel.core.converters.QVCEnum;
 import com.io7m.quarrel.core.converters.QVCFloat;
 import com.io7m.quarrel.core.converters.QVCInetAddress;
 import com.io7m.quarrel.core.converters.QVCInteger;
@@ -96,9 +97,15 @@ public final class QValueConverterDirectory
   }
 
   @Override
+  @SuppressWarnings("unchecked")
   public <T> Optional<QValueConverterType<T>> converterFor(
     final Class<T> type)
   {
+    if (type.isEnum()) {
+      final Class<? extends Enum> t = type.asSubclass(Enum.class);
+      return Optional.of(new QVCEnum<>(t));
+    }
+
     final QValueConverterType<?> converter = this.converters.get(type);
     if (converter == null) {
       return Optional.empty();

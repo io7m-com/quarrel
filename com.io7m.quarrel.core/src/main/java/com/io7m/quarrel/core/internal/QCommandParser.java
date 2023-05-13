@@ -22,6 +22,8 @@ import com.io7m.quarrel.core.QCommandParserConfiguration;
 import com.io7m.quarrel.core.QCommandParserType;
 import com.io7m.quarrel.core.QCommandType;
 import com.io7m.quarrel.core.QException;
+import com.io7m.quarrel.core.QLocalization;
+import com.io7m.quarrel.core.QLocalizationType;
 import com.io7m.quarrel.core.QParameterNamed01;
 import com.io7m.quarrel.core.QParameterNamed0N;
 import com.io7m.quarrel.core.QParameterNamed1;
@@ -57,7 +59,7 @@ public final class QCommandParser implements QCommandParserType
 {
   private final QCommandParserConfiguration configuration;
   private final QStrings strings;
-  private final QLocalization localization;
+  private final QLocalizationType localization;
 
   /**
    * The command parser.
@@ -75,7 +77,7 @@ public final class QCommandParser implements QCommandParserType
     this.strings =
       Objects.requireNonNull(inStrings, "strings");
     this.localization =
-      new QLocalization(
+      QLocalization.create(
         this.strings.resources(),
         this.configuration.applicationResources()
       );
@@ -153,10 +155,10 @@ public final class QCommandParser implements QCommandParserType
   private List<Object> parseParametersPositionalTyped(
     final QCommandType command,
     final List<String> mutableArguments,
-    final ValidatedPositionalsTyped typed)
+    final ValidatedPositionalsTyped positionalsTyped)
     throws QException
   {
-    final var validated = typed.values();
+    final var validated = positionalsTyped.values();
     if (validated.size() != mutableArguments.size()) {
       throw exceptionError(
         this.errorPositionalArgumentsWrongCount(
@@ -190,8 +192,10 @@ public final class QCommandParser implements QCommandParserType
   }
 
   private void parseParametersNamed(
+    final QCommandType command,
     final Map<String, ValidatedNamed<?>> byName,
     final HashMap<QParameterNamedType<?>, List<Object>> parsedValues,
+    final ValidatedPositionalsType positionals,
     final Collection<String> arguments)
     throws QException
   {
@@ -204,11 +208,17 @@ public final class QCommandParser implements QCommandParserType
 
       /*
        * If there is no parameter definition, then assume we've started
-       * parsing positional arguments.
+       * parsing positional arguments (unless there are none!).
        */
 
       final var parameter = byName.get(argument);
       if (parameter == null) {
+        if (positionals instanceof ValidatedPositionalsNone) {
+          throw this.exceptionErrorUnrecognizedNamedParameter(
+            command,
+            argument
+          );
+        }
         break;
       }
 
@@ -246,6 +256,45 @@ public final class QCommandParser implements QCommandParserType
     }
 
     this.checkParametersObeyCardinality(byName, parsedValues);
+  }
+
+  private QException exceptionErrorUnrecognizedNamedParameter(
+    final QCommandType command,
+    final String argument)
+  {
+    return exceptionError(
+      this.errorUnrecognizedNamedParameter(command, argument)
+    );
+  }
+
+  private SStructuredErrorType<String> errorUnrecognizedNamedParameter(
+    final QCommandType command,
+    final String argument)
+  {
+    return new SStructuredError<>(
+      "parameter-unrecognized",
+      this.errorUnrecognizedNamedParameterString(),
+      Map.ofEntries(
+        Map.entry(
+          this.command(),
+          command.metadata().name()),
+        Map.entry(
+          this.parameter(),
+          argument)
+      ),
+      Optional.of(this.errorSuggestUseExistingNamedParameter()),
+      Optional.empty()
+    );
+  }
+
+  private String errorSuggestUseExistingNamedParameter()
+  {
+    return this.localize("quarrel.errorSuggestExistingNamedParameter");
+  }
+
+  private String errorUnrecognizedNamedParameterString()
+  {
+    return this.localize("quarrel.errorUnrecognizedNamedParameter");
   }
 
   private void checkParametersObeyCardinality(
@@ -419,9 +468,6 @@ public final class QCommandParser implements QCommandParserType
         Map.entry(
           this.type(),
           parameter.parameter.type().getCanonicalName()),
-        Map.entry(
-          this.example(),
-          parameter.parameter.name() + " " + parameter.valueConverter.exampleValue()),
         Map.entry(
           this.syntax(),
           parameter.valueConverter.syntax())
@@ -785,7 +831,13 @@ public final class QCommandParser implements QCommandParserType
     }
 
     final var mutableArguments = new ArrayList<>(arguments);
-    this.parseParametersNamed(byName, parsedNamedValues, mutableArguments);
+    this.parseParametersNamed(
+      command,
+      byName,
+      parsedNamedValues,
+      positionals,
+      mutableArguments
+    );
 
     final var rawPositionalValues =
       List.copyOf(mutableArguments);

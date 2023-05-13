@@ -17,15 +17,11 @@
 package com.io7m.quarrel.core;
 
 import com.io7m.quarrel.core.QStringType.QLocalize;
-import com.io7m.seltzer.api.SStructuredErrorType;
 import org.slf4j.Logger;
 
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.SortedMap;
-import java.util.TreeMap;
-
-import static java.lang.Math.max;
 
 /**
  * An application.
@@ -95,15 +91,15 @@ public interface QApplicationType
   {
     try {
       return this.parse(arguments).execute();
-    } catch (final QException e) {
-      this.formatStructuredError(logger, e);
-      for (final var error : e.extraErrors()) {
-        this.formatStructuredError(logger, error);
+    } catch (final QException ex) {
+      QErrorFormatting.format(this, ex, s -> logger.error("{}", s));
+      for (final var error : ex.extraErrors()) {
+        QErrorFormatting.format(this, error, s -> logger.error("{}", s));
       }
       logger.debug(
         "{}: ",
         this.localize(new QLocalize("quarrel.exception")),
-        e);
+        ex);
       return QCommandStatus.FAILURE;
     } catch (final Exception e) {
       logger.error("{}", e.getMessage());
@@ -113,43 +109,5 @@ public interface QApplicationType
         e);
       return QCommandStatus.FAILURE;
     }
-  }
-
-  private void formatStructuredError(
-    final Logger logger,
-    final SStructuredErrorType<String> e)
-  {
-    final var attributeTable = new TreeMap<>(e.attributes());
-    attributeTable.put(
-      this.localize(new QLocalize("quarrel.error_code")),
-      e.errorCode()
-    );
-    e.remediatingAction().ifPresent(act -> {
-      attributeTable.put(
-        this.localize(new QLocalize("quarrel.suggested_action")),
-        act
-      );
-    });
-
-    int maxLength = 0;
-    for (final var entry : attributeTable.entrySet()) {
-      maxLength = max(entry.getKey().length(), maxLength);
-    }
-    maxLength = maxLength + 1;
-
-    final var text = new StringBuilder(attributeTable.size() * 32);
-    text.append(e.message());
-    text.append(System.lineSeparator());
-
-    for (final var entry : attributeTable.entrySet()) {
-      final var name = entry.getKey();
-      final var value = entry.getValue();
-      text.append("  ");
-      text.append(name);
-      text.append(" ".repeat(maxLength - name.length()));
-      text.append(value);
-      text.append(System.lineSeparator());
-    }
-    logger.error("{}", text);
   }
 }

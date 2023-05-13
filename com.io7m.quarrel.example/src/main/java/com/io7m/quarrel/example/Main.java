@@ -75,6 +75,7 @@ public final class Main implements Runnable
       final var builder = QApplication.builder(metadata);
       builder.setApplicationResources(resources);
       builder.addCommand(new ExCmd0());
+      builder.addCommand(new ExCmd1());
       builder.addCommand(new ExEverything());
       builder.addCommand(new ExMeta());
       builder.addCommand(new QCommandXS("xstructural", true));

@@ -564,7 +564,7 @@ public final class QCommandParserTest
       });
 
     LOG.error("", ex);
-    assertEquals("parameter-positional-count", ex.errorCode());
+    assertEquals("parameter-unrecognized", ex.errorCode());
   }
 
   @Test
@@ -622,5 +622,24 @@ public final class QCommandParserTest
 
     LOG.error("", ex);
     assertEquals("parameter-unparseable-value", ex.errorCode());
+  }
+
+  @Test
+  public void testParametersNamedUnrecognizable()
+    throws QException
+  {
+    final var ex =
+      assertThrows(QException.class, () -> {
+        this.parsers.create(this.configuration)
+          .execute(
+            Collections.emptySortedMap(),
+            this.writer,
+            new QCommandNoPositionals(),
+            List.of("--what", "x")
+          );
+      });
+
+    LOG.error("", ex);
+    assertEquals("parameter-unrecognized", ex.errorCode());
   }
 }

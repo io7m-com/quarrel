@@ -12,20 +12,21 @@
     <version>0.0.2</version>
   </parent>
 
-  <artifactId>com.io7m.quarrel.core</artifactId>
+  <artifactId>com.io7m.quarrel.ext.logback</artifactId>
 
-  <name>com.io7m.quarrel.core</name>
-  <description>Command-line argument parser (Core)</description>
+  <name>com.io7m.quarrel.ext.logback</name>
+  <description>Command-line argument parser (Logback extension)</description>
   <url>https://www.io7m.com/software/quarrel</url>
 
   <dependencies>
     <dependency>
-      <groupId>com.io7m.seltzer</groupId>
-      <artifactId>com.io7m.seltzer.api</artifactId>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>com.io7m.quarrel.core</artifactId>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.io7m.jxtrand</groupId>
-      <artifactId>com.io7m.jxtrand.vanilla</artifactId>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
