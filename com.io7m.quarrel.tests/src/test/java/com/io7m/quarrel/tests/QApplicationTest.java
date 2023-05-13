@@ -22,7 +22,7 @@ import com.io7m.quarrel.core.QApplicationMetadata;
 import com.io7m.quarrel.core.QCommandMetadata;
 import com.io7m.quarrel.core.QException;
 import com.io7m.quarrel.core.QParameterPositional;
-import com.io7m.quarrel.core.QStringType;
+import com.io7m.quarrel.core.QStringType.QConstant;
 import com.io7m.quarrel.core.QValueConverterDirectory;
 import com.io7m.quarrel.core.QValueConverterDirectoryType;
 import com.io7m.quarrel.ext.xstructural.QCommandXS;
@@ -36,7 +36,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URI;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -253,6 +252,42 @@ public final class QApplicationTest
   }
 
   @Test
+  public void testHelpGroup()
+    throws Exception
+  {
+    final var builder =
+      QApplication.builder(METADATA)
+        .setOutput(this.writer);
+
+    final var groupMeta =
+      new QCommandMetadata(
+        "x",
+        new QConstant("A group x."),
+        Optional.of(new QConstant("A group."))
+      );
+
+    builder.createCommandGroup(groupMeta)
+      .addCommand(new QCommandParameter1())
+      .addCommand(new QCommandParameter1N())
+      .addCommand(new QCommandParameter0N());
+
+    final var app =
+      builder.build();
+
+    final var s0 =
+      app.parse(List.of("help", "x"))
+        .execute();
+
+    assertEquals(SUCCESS, s0);
+    assertNotEquals("", this.output.toString(UTF_8));
+
+    final var s1 =
+      app.run(LOG, List.of("help", "x"));
+
+    assertEquals(SUCCESS, s1);
+  }
+
+  @Test
   public void testHelpEverything()
     throws Exception
   {
@@ -373,7 +408,7 @@ public final class QApplicationTest
     assertThrows(IllegalArgumentException.class, () -> {
       cmd.parameterValue(new QParameterPositional<Object>(
         "x",
-        new QStringType.QConstant("x"),
+        new QConstant("x"),
         Object.class
       ));
     });
@@ -522,7 +557,8 @@ public final class QApplicationTest
         .build();
 
     final var cmd =
-      app.run(LOG,
+      app.run(
+        LOG,
         List.of(
           "_xs",
           "cmd-everything"
@@ -537,7 +573,7 @@ public final class QApplicationTest
   {
     return new QCommandMetadata(
       name,
-      new QStringType.QConstant(name),
+      new QConstant(name),
       Optional.empty()
     );
   }
