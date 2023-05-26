@@ -17,6 +17,7 @@
 package com.io7m.quarrel.core;
 
 import com.io7m.quarrel.core.QStringType.QLocalize;
+import com.io7m.seltzer.api.SStructuredErrorExceptionType;
 import org.slf4j.Logger;
 
 import java.util.List;
@@ -102,7 +103,11 @@ public interface QApplicationType
         ex);
       return QCommandStatus.FAILURE;
     } catch (final Exception e) {
-      logger.error("{}", e.getMessage());
+      if (e instanceof final SStructuredErrorExceptionType<?> se) {
+        QErrorFormatting.format(this, se, s -> logger.error("{}", s));
+      } else {
+        logger.error("{}", e.getMessage());
+      }
       logger.debug(
         "{}: ",
         this.localize(new QLocalize("quarrel.exception")),
