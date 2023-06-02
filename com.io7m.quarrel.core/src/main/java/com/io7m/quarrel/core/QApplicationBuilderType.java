@@ -92,6 +92,17 @@ public interface QApplicationBuilderType
     QCommandType command);
 
   /**
+   * Enable or disable @ syntax processing.
+   *
+   * @param enabled {@code true} if @ syntax processing is enabled
+   *
+   * @return this
+   */
+
+  QApplicationBuilderType allowAtSyntax(
+    boolean enabled);
+
+  /**
    * @return The immutable application
    */
 

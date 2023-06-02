@@ -480,6 +480,55 @@ public final class QApplicationTest
   }
 
   @Test
+  public void testAtSyntaxNotAllowed()
+    throws Exception
+  {
+    final var file =
+      this.directory.resolve("args.txt")
+        .toAbsolutePath();
+
+    try (var out = Files.newBufferedWriter(file)) {
+      out.write("# this is a comment");
+      out.newLine();
+      out.write("   ");
+      out.newLine();
+      out.write("a");
+      out.newLine();
+      out.write("b");
+      out.newLine();
+      out.write("c");
+      out.newLine();
+      out.newLine();
+      out.newLine();
+      out.write("d");
+      out.newLine();
+      out.write("e");
+      out.newLine();
+      out.flush();
+    }
+
+    final var builder =
+      QApplication.builder(METADATA)
+        .setOutput(this.writer)
+        .allowAtSyntax(false);
+
+    builder.createCommandGroup(group("a"))
+      .createCommandGroup(group("b"))
+      .createCommandGroup(group("c"))
+      .addCommand(new QCommandEmpty("d"));
+
+    final var app =
+      builder.build();
+
+    {
+      final var ex = assertThrows(QException.class, () -> {
+        app.parse(List.of("@" + file));
+      });
+      assertEquals("command-nonexistent", ex.errorCode());
+    }
+  }
+
+  @Test
   public void testNameResolution0()
     throws QException
   {

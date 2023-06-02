@@ -730,6 +730,11 @@ quarrel: usage: quarrel [command] [arguments ...]
       <Term type="constant">@</Term>
       argument.
     </Paragraph>
+    <Paragraph>
+      The processing of <Term type="constant">@</Term> syntax may be disabled by setting
+      <Term type="expression">allowAtSyntax</Term> to <Term type="expression">false</Term> on the
+      <Link target="77c1c4f1-8ef7-4850-95f0-4589b65a8b79">application builder</Link>.
+    </Paragraph>
   </Subsection>
 
   <Subsection title="Value Converters"
