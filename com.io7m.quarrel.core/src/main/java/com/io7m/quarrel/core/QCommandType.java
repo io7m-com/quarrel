@@ -38,7 +38,10 @@ public non-sealed interface QCommandType
    * @return The positional parameters for the command
    */
 
-  QParametersPositionalType onListPositionalParameters();
+  default QParametersPositionalType onListPositionalParameters()
+  {
+    return new QParametersPositionalNone();
+  }
 
   /**
    * Execute the command.
