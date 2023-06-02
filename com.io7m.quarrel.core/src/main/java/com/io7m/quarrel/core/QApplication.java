@@ -62,6 +62,7 @@ public final class QApplication implements QApplicationType
   private final ResourceBundle internalResources;
   private final QCommandParsers parsers;
   private final QLocalizationType localization;
+  private final boolean allowAtSyntax;
 
   private QApplication(
     final PrintWriter inWriter,
@@ -69,7 +70,8 @@ public final class QApplication implements QApplicationType
     final SortedMap<String, QCommandOrGroupType> inCommandTree,
     final QValueConverterDirectoryType inConverters,
     final ResourceBundle inApplicationResources,
-    final ResourceBundle inInternalResources)
+    final ResourceBundle inInternalResources,
+    final boolean inAllowAtSyntax)
   {
     this.writer =
       Objects.requireNonNull(inWriter, "writer");
@@ -83,6 +85,8 @@ public final class QApplication implements QApplicationType
       Objects.requireNonNull(inApplicationResources, "applicationResources");
     this.internalResources =
       Objects.requireNonNull(inInternalResources, "internalResources");
+    this.allowAtSyntax =
+      inAllowAtSyntax;
     this.parsers =
       new QCommandParsers();
     this.localization =
@@ -152,12 +156,14 @@ public final class QApplication implements QApplicationType
     final List<String> arguments)
     throws QException
   {
-    if (!arguments.isEmpty()) {
-      final var first = arguments.get(0);
-      if (first.startsWith("@")) {
-        final var argumentsRest = new ArrayList<>(arguments);
-        argumentsRest.remove(0);
-        return this.expandArgument(first, argumentsRest);
+    if (this.allowAtSyntax) {
+      if (!arguments.isEmpty()) {
+        final var first = arguments.get(0);
+        if (first.startsWith("@")) {
+          final var argumentsRest = new ArrayList<>(arguments);
+          argumentsRest.remove(0);
+          return this.expandArgument(first, argumentsRest);
+        }
       }
     }
     return arguments;
@@ -298,6 +304,7 @@ public final class QApplication implements QApplicationType
     private QValueConverterDirectoryType converters;
     private ResourceBundle internalResources;
     private ResourceBundle applicationResources;
+    private boolean allowAtSyntax;
 
     ApplicationBuilder(
       final QApplicationMetadata inMetadata)
@@ -318,6 +325,7 @@ public final class QApplication implements QApplicationType
           .resources();
       this.applicationResources =
         new QEmptyResources();
+      this.allowAtSyntax = true;
 
       this.versionCommand =
         new QCommandVersion(this.metadata);
@@ -390,6 +398,14 @@ public final class QApplication implements QApplicationType
     }
 
     @Override
+    public QApplicationBuilderType allowAtSyntax(
+      final boolean enabled)
+    {
+      this.allowAtSyntax = enabled;
+      return this;
+    }
+
+    @Override
     public QApplicationType build()
     {
       final var tree = new TreeMap<String, QCommandOrGroupType>();
@@ -410,7 +426,8 @@ public final class QApplication implements QApplicationType
         Collections.unmodifiableSortedMap(tree),
         this.converters,
         this.applicationResources,
-        this.internalResources
+        this.internalResources,
+        this.allowAtSyntax
       );
     }
 
