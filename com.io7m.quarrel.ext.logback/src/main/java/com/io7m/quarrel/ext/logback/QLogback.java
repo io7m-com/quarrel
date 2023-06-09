@@ -23,6 +23,7 @@ import com.io7m.quarrel.core.QParameterNamedType;
 import com.io7m.quarrel.core.QStringType;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -57,6 +58,20 @@ public final class QLogback
   public static List<QParameterNamedType<?>> parameters()
   {
     return List.of(VERBOSITY);
+  }
+
+  /**
+   * @param parameters The existing parameters
+   *
+   * @return The existing parameters, plus {{@link #parameters()}}.
+   */
+
+  public static List<QParameterNamedType<?>> plusParameters(
+    final List<QParameterNamedType<?>> parameters)
+  {
+    final var results = new ArrayList<>(parameters);
+    results.addAll(parameters());
+    return List.copyOf(results);
   }
 
   /**

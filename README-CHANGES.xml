@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <c:changelog project="com.io7m.quarrel" xmlns:c="urn:com.io7m.changelog:4.0">
   <c:releases>
-    <c:release date="2023-06-02T12:58:37+00:00" is-open="false" ticket-system="com.github.io7m.quarrel" version="1.0.0">
+    <c:release date="2023-06-02T00:00:00+00:00" is-open="false" ticket-system="com.github.io7m.quarrel" version="1.0.0">
       <c:changes>
         <c:change date="2023-06-02T00:00:00+00:00" summary="Initial major release."/>
+      </c:changes>
+    </c:release>
+    <c:release date="2023-06-09T14:38:44+00:00" is-open="true" ticket-system="com.github.io7m.quarrel" version="1.1.0">
+      <c:changes>
+        <c:change date="2023-06-09T14:38:44+00:00" summary="Add plusParameters to QLogback."/>
       </c:changes>
     </c:release>
   </c:releases>
