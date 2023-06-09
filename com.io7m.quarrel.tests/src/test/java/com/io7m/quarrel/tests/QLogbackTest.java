@@ -14,27 +14,40 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-/**
- * Command-line argument parser (Test suite)
- */
 
-open module com.io7m.quarrel.tests
+package com.io7m.quarrel.tests;
+
+import com.io7m.quarrel.core.QParameterNamed1;
+import com.io7m.quarrel.core.QStringType;
+import com.io7m.quarrel.ext.logback.QLogback;
+import org.junit.jupiter.api.Test;
+
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+public final class QLogbackTest
 {
-  requires static org.osgi.annotation.bundle;
-  requires static org.osgi.annotation.versioning;
+  @Test
+  public void testParameters()
+  {
+    assertNotEquals(0, QLogback.parameters().size());
+  }
 
-  requires com.io7m.quarrel.core;
-  requires com.io7m.quarrel.ext.xstructural;
+  @Test
+  public void testParametersPlus()
+  {
+    final var p =
+      new QParameterNamed1<>(
+        "--x",
+        List.of(),
+        new QStringType.QConstant("X!"),
+        Optional.empty(),
+        String.class
+      );
 
-  requires transitive org.junit.jupiter.api;
-  requires transitive org.junit.jupiter.engine;
-  requires transitive org.junit.platform.commons;
-  requires transitive org.junit.platform.engine;
-
-  requires org.apache.commons.io;
-  requires org.slf4j;
-  requires net.jqwik.api;
-  requires com.io7m.quarrel.ext.logback;
-
-  exports com.io7m.quarrel.tests;
+    assertTrue(QLogback.plusParameters(List.of(p)).contains(p));
+  }
 }
