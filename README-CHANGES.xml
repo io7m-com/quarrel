@@ -6,9 +6,15 @@
         <c:change date="2023-06-02T00:00:00+00:00" summary="Initial major release."/>
       </c:changes>
     </c:release>
-    <c:release date="2023-06-09T14:48:04+00:00" is-open="false" ticket-system="com.github.io7m.quarrel" version="1.1.0">
+    <c:release date="2023-06-09T00:00:00+00:00" is-open="false" ticket-system="com.github.io7m.quarrel" version="1.1.0">
       <c:changes>
         <c:change date="2023-06-09T00:00:00+00:00" summary="Add plusParameters to QLogback."/>
+      </c:changes>
+    </c:release>
+    <c:release date="2023-06-11T11:42:18+00:00" is-open="false" ticket-system="com.github.io7m.quarrel" version="1.2.0">
+      <c:changes>
+        <c:change date="2023-06-11T00:00:00+00:00" summary="Update com.io7m.seltzer:com.io7m.seltzer.api 1.0.0-beta0001 → 1.0.0."/>
+        <c:change date="2023-06-11T00:00:00+00:00" summary="Update commons-io:commons-io 2.12.0 → 2.13.0."/>
       </c:changes>
     </c:release>
   </c:releases>
