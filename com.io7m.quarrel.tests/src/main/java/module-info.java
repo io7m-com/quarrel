@@ -34,6 +34,7 @@ open module com.io7m.quarrel.tests
   requires org.apache.commons.io;
   requires org.slf4j;
   requires net.jqwik.api;
+  requires com.io7m.quarrel.ext.logback;
 
   exports com.io7m.quarrel.tests;
 }
