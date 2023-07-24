@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Function;
 
 /**
  * The type of exceptions raised by the package.
@@ -96,6 +97,35 @@ public final class QException extends Exception
       Objects.requireNonNull(inRemediatingAction, "remediatingAction");
     this.extraErrors =
       Objects.requireNonNull(inExtraErrors, "extraErrors");
+  }
+
+  /**
+   * Adapt a generic exception to this exception type.
+   *
+   * @param exception          An exception
+   * @param errorCodeConverter A converter from error codes to strings
+   * @param <C>                The type of error codes
+   * @param <T>                The type of base exceptions
+   *
+   * @return An exception
+   */
+
+  public static <C, T extends Exception & SStructuredErrorExceptionType<C>>
+  QException adapt(
+    final T exception,
+    final Function<C, String> errorCodeConverter)
+  {
+    Objects.requireNonNull(exception, "exception");
+    Objects.requireNonNull(errorCodeConverter, "errorCodeConverter");
+
+    return new QException(
+      exception.getMessage(),
+      exception,
+      errorCodeConverter.apply(exception.errorCode()),
+      exception.attributes(),
+      exception.remediatingAction(),
+      List.of()
+    );
   }
 
   /**
