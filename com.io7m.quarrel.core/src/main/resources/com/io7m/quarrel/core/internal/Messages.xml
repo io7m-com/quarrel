@@ -89,7 +89,7 @@ For example, for a hypothetical application named "quarrel":
   <entry key="quarrel.errorSuggestProvideParseable">Provide a parseable value on the command-line.</entry>
   <entry key="quarrel.errorSuggestProvideRightNumber">Provide the right number of arguments for the parameter.</entry>
   <entry key="quarrel.errorSuggestProvideValue">Provide a value on the command-line.</entry>
-  <entry key="quarrel.errorSuggestRegisterConverter">Register a value converter for the given class.</entry>
+  <entry key="quarrel.errorSuggestRegisterConverter">Report this bug to the application developer.</entry>
   <entry key="quarrel.errorSuggestRightPath">Specify the name of an existing command.</entry>
   <entry key="quarrel.errorSuggestUniqueNames">Use unique names for parameters.</entry>
   <entry key="quarrel.errorUnrecognizedNamedParameter">An unrecognized named parameter was specified.</entry>

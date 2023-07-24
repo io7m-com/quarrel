@@ -19,7 +19,7 @@ package com.io7m.quarrel.tests;
 
 import com.io7m.quarrel.core.QException;
 import com.io7m.quarrel.core.QValueConverterDirectory;
-import com.io7m.quarrel.core.QValueConverterDirectoryType;
+import com.io7m.quarrel.core.QValueConverterType;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.ForAll;
@@ -48,7 +48,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public final class QValueConverterDictionaryTest
+public final class QValueConverterDirectoryTest
 {
   @Provide
   private static Arbitrary<UUID> uuids()
@@ -409,5 +409,57 @@ public final class QValueConverterDictionaryTest
       c.exampleValue(),
       c.convertFromString(c.convertToString(c.exampleValue()))
     );
+  }
+
+  @Test
+  public void testWith()
+  {
+    final var c =
+      QValueConverterDirectory.core();
+
+    assertEquals(Optional.empty(), c.converterFor(Byte.class));
+
+    final var conv =
+      new ByteConverter();
+    final var d =
+      c.with(conv);
+
+    assertEquals(Optional.of(conv), d.converterFor(Byte.class));
+  }
+
+  private static final class ByteConverter
+    implements QValueConverterType<Byte>
+  {
+    @Override
+    public Byte convertFromString(
+      final String text)
+    {
+      return Byte.valueOf(Byte.parseByte(text));
+    }
+
+    @Override
+    public String convertToString(
+      final Byte value)
+    {
+      return Byte.toString(value.byteValue());
+    }
+
+    @Override
+    public Byte exampleValue()
+    {
+      return Byte.valueOf((byte) 0x7f);
+    }
+
+    @Override
+    public String syntax()
+    {
+      return "[0-9]+";
+    }
+
+    @Override
+    public Class<Byte> convertedClass()
+    {
+      return Byte.class;
+    }
   }
 }

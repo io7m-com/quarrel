@@ -55,4 +55,20 @@ public interface QValueConverterDirectoryType
   <T> QValueConverterDirectoryType with(
     Class<T> clazz,
     QValueConverterType<T> converter);
+
+  /**
+   * Extend this value converter directory with the given converter, returning a
+   * new directory.
+   *
+   * @param <T>       The type
+   * @param converter The converter
+   *
+   * @return A new directory with the given converter
+   */
+
+  default <T> QValueConverterDirectoryType with(
+    final QValueConverterType<T> converter)
+  {
+    return this.with(converter.convertedClass(), converter);
+  }
 }

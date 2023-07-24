@@ -85,6 +85,7 @@ public final class QCommandHelpFormatting
     final String applicationName,
     final PrintWriter output,
     final QCommandType command)
+    throws QException
   {
     Objects.requireNonNull(valueConverters, "valueConverters");
     Objects.requireNonNull(localization, "localization");
@@ -145,6 +146,7 @@ public final class QCommandHelpFormatting
     final QLocalizationType ctx,
     final PrintWriter writer,
     final List<QParameterNamedType<?>> named)
+    throws QException
   {
     if (!named.isEmpty()) {
       named.sort(Comparator.comparing(QParameterType::name));
@@ -324,6 +326,7 @@ public final class QCommandHelpFormatting
     final String cardinalityName,
     final QParameterNamedType<?> parameter,
     final QValueConverterType<?> converter)
+    throws QException
   {
     if (parameter instanceof final QParameterNamed1N<?> p1n) {
       final var def = p1n.defaultValue();
@@ -362,6 +365,7 @@ public final class QCommandHelpFormatting
     final String cardinalityName,
     final QParameterNamedType<?> parameter,
     final QValueConverterType<?> converter)
+    throws QException
   {
     if (parameter instanceof final QParameterNamed0N<?> p0n) {
       final var def = p0n.defaultValue();
@@ -400,6 +404,7 @@ public final class QCommandHelpFormatting
     final String cardinalityName,
     final QParameterNamedType<?> parameter,
     final QValueConverterType<?> converter)
+    throws QException
   {
     if (parameter instanceof final QParameterNamed01<?> p01) {
       final var def = p01.defaultValue();
@@ -438,6 +443,7 @@ public final class QCommandHelpFormatting
     final String cardinalityName,
     final QParameterNamedType<?> parameter,
     final QValueConverterType<?> converter)
+    throws QException
   {
     if (parameter instanceof final QParameterNamed1<?> p1) {
       final var def = p1.defaultValue();
@@ -472,13 +478,16 @@ public final class QCommandHelpFormatting
     final PrintWriter writer,
     final QValueConverterType<?> converter,
     final Collection<?> def)
+    throws QException
   {
     final var cUnsafe =
       (QValueConverterType<Object>) converter;
-    final var text =
-      def.stream()
-        .map(cUnsafe::convertToString)
-        .toList();
+
+    final var text = new ArrayList<String>();
+    for (final var c : def) {
+      text.add(cUnsafe.convertToString(c));
+    }
+
     writer.print(text);
   }
 
@@ -486,6 +495,7 @@ public final class QCommandHelpFormatting
     final PrintWriter writer,
     final QValueConverterType<?> converter,
     final Object def)
+    throws QException
   {
     final var cUnsafe = (QValueConverterType<Object>) converter;
     writer.print(cUnsafe.convertToString(def));

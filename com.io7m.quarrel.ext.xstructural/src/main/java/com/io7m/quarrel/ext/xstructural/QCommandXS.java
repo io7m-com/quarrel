@@ -26,6 +26,7 @@ import com.io7m.quarrel.core.QCommandTreeResolver.QResolutionOKCommand;
 import com.io7m.quarrel.core.QCommandTreeResolver.QResolutionOKGroup;
 import com.io7m.quarrel.core.QCommandTreeResolver.QResolutionRoot;
 import com.io7m.quarrel.core.QCommandType;
+import com.io7m.quarrel.core.QException;
 import com.io7m.quarrel.core.QParameterNamed01;
 import com.io7m.quarrel.core.QParameterNamed0N;
 import com.io7m.quarrel.core.QParameterNamed1;
@@ -40,7 +41,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
@@ -55,7 +55,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import static com.io7m.quarrel.core.QCommandStatus.FAILURE;
 import static com.io7m.quarrel.core.QCommandStatus.SUCCESS;
@@ -150,7 +149,7 @@ public final class QCommandXS implements QCommandType
   private static void showCommand(
     final QCommandContextType context,
     final QCommandType command)
-    throws ParserConfigurationException, TransformerException
+    throws Exception
   {
     final var documents =
       DocumentBuilderFactory.newDefaultNSInstance();
@@ -199,6 +198,7 @@ public final class QCommandXS implements QCommandType
     final QCommandType command,
     final Document document,
     final Element root)
+    throws QException
   {
     final Element description =
       (Element) root.appendChild(document.createElementNS(NS, "Subsection"));
@@ -288,6 +288,7 @@ public final class QCommandXS implements QCommandType
     final Document document,
     final QParameterNamedType<?> param,
     final Element row)
+    throws QException
   {
     final var cell =
       (Element) row.appendChild(document.createElementNS(NS, "Cell"));
@@ -302,42 +303,74 @@ public final class QCommandXS implements QCommandType
 
     term.setAttribute("type", "constant");
     if (param instanceof final QParameterNamed1<?> n) {
-      term.setTextContent(
-        n.defaultValue()
-          .map(c::convertToString)
-          .orElse("")
-      );
+      term.setTextContent(formatParameterCellContent1(c, n));
     } else if (param instanceof final QParameterNamed01<?> n) {
-      term.setTextContent(
-        n.defaultValue()
-          .map(c::convertToString)
-          .orElse("")
-      );
+      term.setTextContent(formatParameterCellContent01(c, n));
     } else if (param instanceof final QParameterNamed0N<?> n) {
-      term.setTextContent(
-        new StringBuilder(128)
-          .append("[")
-          .append(
-            n.defaultValue()
-              .stream()
-              .map(c::convertToString)
-              .collect(Collectors.joining(", ")))
-          .append("]")
-          .toString()
-      );
+      term.setTextContent(formatParameterCellContent0N(c, n));
     } else if (param instanceof final QParameterNamed1N<?> n) {
-      term.setTextContent(
-        new StringBuilder(128)
-          .append("[")
-          .append(
-            n.defaultValue()
-              .stream()
-              .map(c::convertToString)
-              .collect(Collectors.joining(", ")))
-          .append("]")
-          .toString()
-      );
+      term.setTextContent(formatParameterCellContent1N(c, n));
     }
+  }
+
+  private static String formatParameterCellContent1N(
+    final QValueConverterType<Object> c,
+    final QParameterNamed1N<?> n)
+    throws QException
+  {
+    final String text;
+    final var opt = n.defaultValue();
+    if (opt.isPresent()) {
+      text = c.convertToString(opt.get());
+    } else {
+      text = "";
+    }
+
+    return new StringBuilder(128)
+      .append("[")
+      .append(text)
+      .append("]")
+      .toString();
+  }
+
+  private static String formatParameterCellContent0N(
+    final QValueConverterType<Object> c,
+    final QParameterNamed0N<?> n)
+    throws QException
+  {
+    final List<String> items = new ArrayList<>();
+    for (final var o : n.defaultValue()) {
+      items.add(c.convertToString(o));
+    }
+    return new StringBuilder(128)
+      .append("[")
+      .append(String.join(", ", items))
+      .append("]")
+      .toString();
+  }
+
+  private static String formatParameterCellContent01(
+    final QValueConverterType<Object> c,
+    final QParameterNamed01<?> n)
+    throws QException
+  {
+    final var opt = n.defaultValue();
+    if (opt.isPresent()) {
+      return c.convertToString(opt.get());
+    }
+    return "";
+  }
+
+  private static String formatParameterCellContent1(
+    final QValueConverterType<Object> c,
+    final QParameterNamed1<?> n)
+    throws QException
+  {
+    final var opt = n.defaultValue();
+    if (opt.isPresent()) {
+      return c.convertToString(opt.get());
+    }
+    return "";
   }
 
   private static void generateCellForCardinality(

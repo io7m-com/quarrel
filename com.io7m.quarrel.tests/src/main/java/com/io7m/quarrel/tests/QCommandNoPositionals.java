@@ -23,7 +23,6 @@ import com.io7m.quarrel.core.QCommandStatus;
 import com.io7m.quarrel.core.QCommandType;
 import com.io7m.quarrel.core.QParameterNamed0N;
 import com.io7m.quarrel.core.QParameterNamedType;
-import com.io7m.quarrel.core.QParametersPositionalAny;
 import com.io7m.quarrel.core.QParametersPositionalNone;
 import com.io7m.quarrel.core.QParametersPositionalType;
 import com.io7m.quarrel.core.QStringType;

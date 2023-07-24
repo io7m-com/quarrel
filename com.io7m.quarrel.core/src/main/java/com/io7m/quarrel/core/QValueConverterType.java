@@ -46,9 +46,12 @@ public interface QValueConverterType<T>
    * @param value The value
    *
    * @return A string
+   *
+   * @throws QException On errors
    */
 
-  String convertToString(T value);
+  String convertToString(T value)
+    throws QException;
 
   /**
    * @return An example value used for documentation
