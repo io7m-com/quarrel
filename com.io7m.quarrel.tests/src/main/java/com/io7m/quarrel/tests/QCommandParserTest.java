@@ -422,6 +422,41 @@ public final class QCommandParserTest
   }
 
   @Test
+  public void testParameters01Now()
+    throws QException
+  {
+    final var c =
+      this.parsers.create(this.configuration)
+        .execute(
+          Collections.emptySortedMap(),
+          this.writer,
+          new QCommandParameter01(),
+          List.of()
+        );
+
+    final var ex = assertThrows(QException.class, () -> {
+      c.parameterValueRequireNow(QCommandParameter01.PARAMETER);
+    });
+    assertEquals("parameter-missing-value", ex.errorCode());
+  }
+
+  @Test
+  public void testParameters01NowOK()
+    throws QException
+  {
+    final var c =
+      this.parsers.create(this.configuration)
+        .execute(
+          Collections.emptySortedMap(),
+          this.writer,
+          new QCommandParameter01(),
+          List.of("--file", "x")
+        );
+
+    assertEquals("x", c.parameterValueRequireNow(QCommandParameter01.PARAMETER));
+  }
+
+  @Test
   public void testParametersInt1()
     throws QException
   {

@@ -9,12 +9,12 @@
   <parent>
     <groupId>com.io7m.primogenitor</groupId>
     <artifactId>com.io7m.primogenitor.full</artifactId>
-    <version>7.7.0</version>
+    <version>8.1.0</version>
   </parent>
 
   <groupId>com.io7m.quarrel</groupId>
   <artifactId>com.io7m.quarrel</artifactId>
-  <version>1.3.1-SNAPSHOT</version>
+  <version>1.4.0-SNAPSHOT</version>
 
   <packaging>pom</packaging>
   <name>com.io7m.quarrel</name>
@@ -158,7 +158,7 @@
       <dependency>
         <groupId>com.io7m.primogenitor</groupId>
         <artifactId>com.io7m.primogenitor.support</artifactId>
-        <version>7.7.0</version>
+        <version>8.1.0</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
