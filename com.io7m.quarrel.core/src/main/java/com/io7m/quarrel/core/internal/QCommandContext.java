@@ -20,6 +20,7 @@ import com.io7m.quarrel.core.QCommandContextType;
 import com.io7m.quarrel.core.QCommandOrGroupType;
 import com.io7m.quarrel.core.QCommandStatus;
 import com.io7m.quarrel.core.QCommandType;
+import com.io7m.quarrel.core.QException;
 import com.io7m.quarrel.core.QLocalizationType;
 import com.io7m.quarrel.core.QParameterNamed01;
 import com.io7m.quarrel.core.QParameterNamed0N;
@@ -30,6 +31,7 @@ import com.io7m.quarrel.core.QParameterPositional;
 import com.io7m.quarrel.core.QParametersPositionalType;
 import com.io7m.quarrel.core.QParametersPositionalTyped;
 import com.io7m.quarrel.core.QStringType;
+import com.io7m.quarrel.core.QStringType.QLocalize;
 import com.io7m.quarrel.core.QValueConverterDirectoryType;
 
 import java.io.PrintWriter;
@@ -140,7 +142,7 @@ public final class QCommandContext implements QCommandContextType
   public <T> T parameterValue(
     final QParameterPositional<T> parameter)
   {
-    if (this.positionalParameters instanceof QParametersPositionalTyped typed) {
+    if (this.positionalParameters instanceof final QParametersPositionalTyped typed) {
       final var parameters = typed.parameters();
       for (int index = 0; index < parameters.size(); ++index) {
         if (Objects.equals(parameters.get(index), parameter)) {
@@ -206,6 +208,30 @@ public final class QCommandContext implements QCommandContextType
   }
 
   @Override
+  public <T> T parameterValueRequireNow(
+    final QParameterNamed01<T> parameter)
+    throws QException
+  {
+    return this.parameterValue(parameter)
+      .orElseThrow(() -> {
+        return new QException(
+          this.errorParameterMissingValue(),
+          "parameter-missing-value",
+          Map.ofEntries(
+            Map.entry(
+              this.parameter(),
+              parameter.name()),
+            Map.entry(
+              this.type(),
+              parameter.type().getCanonicalName())
+          ),
+          Optional.of(this.errorSuggestProvideValue()),
+          List.of()
+        );
+      });
+  }
+
+  @Override
   public String localize(
     final QStringType string)
   {
@@ -218,5 +244,25 @@ public final class QCommandContext implements QCommandContextType
     final Object... arguments)
   {
     return this.localization.format(string, arguments);
+  }
+
+  private String errorParameterMissingValue()
+  {
+    return this.localize(new QLocalize("quarrel.errorParameterMissingValue"));
+  }
+
+  private String parameter()
+  {
+    return this.localize(new QLocalize("quarrel.parameter"));
+  }
+
+  private String type()
+  {
+    return this.localize(new QLocalize("quarrel.type"));
+  }
+
+  private String errorSuggestProvideValue()
+  {
+    return this.localize(new QLocalize("quarrel.errorSuggestProvideValue"));
   }
 }

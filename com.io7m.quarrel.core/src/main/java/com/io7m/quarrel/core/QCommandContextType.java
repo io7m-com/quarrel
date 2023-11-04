@@ -16,6 +16,8 @@
 
 package com.io7m.quarrel.core;
 
+import org.osgi.annotation.versioning.ProviderType;
+
 import java.io.PrintWriter;
 import java.util.List;
 import java.util.Optional;
@@ -26,6 +28,7 @@ import java.util.SortedMap;
  * access to parsed, typed parameters.
  */
 
+@ProviderType
 public interface QCommandContextType
   extends QLocalizationType
 {
@@ -116,4 +119,18 @@ public interface QCommandContextType
 
   QCommandStatus execute()
     throws Exception;
+
+  /**
+   * @param parameter The parameter
+   * @param <T>       The parameter type
+   *
+   * @return The value for the parameter
+   *
+   * @since 1.4.0
+   * @throws QException On errors
+   */
+
+  <T> T parameterValueRequireNow(
+    QParameterNamed01<T> parameter)
+    throws QException;
 }

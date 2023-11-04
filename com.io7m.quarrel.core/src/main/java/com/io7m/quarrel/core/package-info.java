@@ -19,7 +19,7 @@
  */
 
 @Export
-@Version("1.1.0")
+@Version("1.4.0")
 package com.io7m.quarrel.core;
 
 import org.osgi.annotation.bundle.Export;
