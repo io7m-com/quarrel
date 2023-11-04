@@ -24,9 +24,9 @@
         <c:change date="2023-07-24T00:00:00+00:00" summary="Add convenient with() method to converter directories."/>
       </c:changes>
     </c:release>
-    <c:release date="2023-11-04T15:47:04+00:00" is-open="true" ticket-system="com.github.io7m.quarrel" version="1.4.0">
+    <c:release date="2023-11-04T18:00:49+00:00" is-open="false" ticket-system="com.github.io7m.quarrel" version="1.4.0">
       <c:changes>
-        <c:change date="2023-11-04T15:47:04+00:00" summary="Add parameterValueRequireNow for optional parameters."/>
+        <c:change date="2023-11-04T00:00:00+00:00" summary="Add parameterValueRequireNow for optional parameters."/>
       </c:changes>
     </c:release>
   </c:releases>
