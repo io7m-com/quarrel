@@ -69,6 +69,24 @@ public final class QCommandXS implements QCommandType
   private final boolean hidden;
   private final QCommandMetadata metadata;
 
+  private static final QParameterNamed1<String> TYPE =
+    new QParameterNamed1<>(
+      "--type",
+      List.of(),
+      new QConstant("The type of output."),
+      Optional.empty(),
+      String.class
+    );
+
+  private static final QParameterNamed1<String> PARAMETERS_INCLUDE_NAME =
+    new QParameterNamed1<>(
+      "--parameters-include",
+      List.of(),
+      new QConstant("The name of the file to include for parameters."),
+      Optional.of("parameters.xml"),
+      String.class
+    );
+
   /**
    * A command that produces an xstructural documentation template.
    *
@@ -104,7 +122,7 @@ public final class QCommandXS implements QCommandType
   @Override
   public List<QParameterNamedType<?>> onListNamedParameters()
   {
-    return List.of();
+    return List.of(TYPE, PARAMETERS_INCLUDE_NAME);
   }
 
   @Override
@@ -120,34 +138,37 @@ public final class QCommandXS implements QCommandType
   {
     final var command =
       context.parametersPositionalRaw();
+    final var type =
+      context.parameterValue(TYPE);
     final var result =
       QCommandTreeResolver.resolve(context.commandTree(), command);
 
-    if (result instanceof QResolutionRoot) {
-      return SUCCESS;
+    switch (result) {
+      case final QResolutionRoot r -> {
+        return SUCCESS;
+      }
+      case final QResolutionOKCommand cmd -> {
+        showCommand(context, type, cmd.command());
+        return SUCCESS;
+      }
+      case final QResolutionOKGroup group -> {
+        return SUCCESS;
+      }
+      case final QResolutionErrorDoesNotExist r -> {
+        return FAILURE;
+      }
     }
-
-    if (result instanceof final QResolutionOKCommand cmd) {
-      showCommand(context, cmd.command());
-      return SUCCESS;
-    }
-
-    if (result instanceof final QResolutionOKGroup group) {
-      return SUCCESS;
-    }
-
-    if (result instanceof QResolutionErrorDoesNotExist) {
-      return FAILURE;
-    }
-
-    return SUCCESS;
   }
 
   private static final String NS =
     "urn:com.io7m.structural:8:0";
 
+  private static final String NS_XI =
+    "http://www.w3.org/2001/XInclude";
+
   private static void showCommand(
     final QCommandContextType context,
+    final String type,
     final QCommandType command)
     throws Exception
   {
@@ -156,17 +177,36 @@ public final class QCommandXS implements QCommandType
     final var document =
       documents.newDocumentBuilder().newDocument();
 
-    final Element root =
-      (Element) document.appendChild(
-        document.createElementNS(NS, "Section")
-      );
+    switch (type) {
+      case "main" -> {
+        final Element root =
+          (Element) document.appendChild(
+            document.createElementNS(NS, "Section")
+          );
 
-    root.setAttribute("title", command.metadata().name());
-    root.setAttribute("id", idFor(command).toString());
+        root.setAttribute("xmlns:xi", NS_XI);
+        root.setAttribute("title", command.metadata().name());
+        root.setAttribute("id", idFor(command).toString());
 
-    sectionName(context, command, document, root);
-    sectionDescription(context, command, document, root);
-    sectionExamples(document, root);
+        sectionName(context, command, document, root);
+        sectionDescription(context, command, document, root);
+        sectionExamples(document, root);
+      }
+      case "parameters" -> {
+        final Element root =
+          (Element) document.appendChild(
+            parameterTable(
+              context,
+              command,
+              document,
+              command.onListNamedParameters()
+            )
+          );
+      }
+      default -> {
+        throw new IllegalStateException("Unexpected value: " + type);
+      }
+    }
 
     write(document, context.output());
   }
@@ -176,20 +216,23 @@ public final class QCommandXS implements QCommandType
     final Element root)
   {
     final Element examples =
-      (Element) root.appendChild(document.createElementNS(NS, "Subsection"));
+      (Element) root.appendChild(
+        document.createElementNS(NS, "Subsection")
+      );
     examples.setAttribute("title", "Examples");
 
     final var formal =
-      (Element) examples.appendChild(document.createElementNS(
-        NS,
-        "FormalItem"));
+      (Element) examples.appendChild(
+        document.createElementNS(NS, "FormalItem")
+      );
 
     formal.setAttribute("title", "Example");
     formal.setAttribute("type", "example");
 
     final var verbatim =
-      (Element) formal.appendChild(document.createElementNS(
-        NS, "Verbatim"));
+      (Element) formal.appendChild(
+        document.createElementNS(NS, "Verbatim")
+      );
     verbatim.setTextContent("...");
   }
 
@@ -198,21 +241,24 @@ public final class QCommandXS implements QCommandType
     final QCommandType command,
     final Document document,
     final Element root)
-    throws QException
   {
     final Element description =
-      (Element) root.appendChild(document.createElementNS(NS, "Subsection"));
+      (Element) root.appendChild(
+        document.createElementNS(NS, "Subsection")
+      );
     description.setAttribute("title", "Description");
 
     final var para =
-      (Element) description.appendChild(document.createElementNS(
-        NS,
-        "Paragraph"));
+      (Element) description.appendChild(
+        document.createElementNS(NS, "Paragraph")
+      );
 
     final var meta =
       command.metadata();
     final var term =
-      (Element) para.appendChild(document.createElementNS(NS, "Term"));
+      (Element) para.appendChild(
+        document.createElementNS(NS, "Term")
+      );
     term.setAttribute("type", "command");
     term.setTextContent(meta.name());
 
@@ -223,77 +269,206 @@ public final class QCommandXS implements QCommandType
     final var named = command.onListNamedParameters();
     if (!named.isEmpty()) {
       final var formal =
-        (Element) description.appendChild(document.createElementNS(
-          NS,
-          "FormalItem"));
+        (Element) description.appendChild(
+          document.createElementNS(NS, "FormalItem")
+        );
+
       formal.setAttribute("title", "Parameters");
 
+      final var e =
+        (Element) description.appendChild(
+          document.createElementNS(NS_XI, "xi:include")
+        );
+
+      e.setAttribute("href", context.parameterValue(PARAMETERS_INCLUDE_NAME));
+      formal.appendChild(e);
+    }
+  }
+
+  private static Element parameterTable(
+    final QCommandContextType context,
+    final QCommandType command,
+    final Document document,
+    final List<QParameterNamedType<?>> named)
+    throws QException
+  {
+    final var root =
+      (Element) document.createElementNS(NS, "Subsection");
+
+    root.setAttribute("title", "Parameters");
+
+    final var sorted = new ArrayList<>(named);
+    sorted.sort(Comparator.comparing(QParameterType::name));
+
+    for (final var param : sorted) {
+      final var formal =
+        (Element) document.createElementNS(NS, "FormalItem");
+
+      formal.setAttribute("title", param.name());
+      formal.setAttribute("id", UUID.nameUUIDFromBytes(
+        (command.metadata().name() + ":" + param.name()).getBytes(UTF_8)
+      ).toString());
+
       final var table =
-        (Element) formal.appendChild(document.createElementNS(NS, "Table"));
+        (Element) document.createElementNS(NS, "Table");
 
       table.setAttribute("type", "parameterTable");
 
       final var columns =
-        (Element) table.appendChild(document.createElementNS(NS, "Columns"));
+        (Element) table.appendChild(
+          document.createElementNS(NS, "Columns")
+        );
 
       final var c0 =
-        (Element) columns.appendChild(document.createElementNS(NS, "Column"));
-      c0.setTextContent("Parameter");
+        (Element) columns.appendChild(
+          document.createElementNS(NS, "Column")
+        );
+      c0.setTextContent("Attribute");
 
       final var c1 =
-        (Element) columns.appendChild(document.createElementNS(NS, "Column"));
-      c1.setTextContent("Type");
+        (Element) columns.appendChild(
+          document.createElementNS(NS, "Column")
+        );
+      c1.setTextContent("Value");
 
-      final var c2 =
-        (Element) columns.appendChild(document.createElementNS(NS, "Column"));
-      c2.setTextContent("Cardinality");
+      table.appendChild(generateRowForName(document, param));
+      table.appendChild(generateRowForType(document, param));
+      table.appendChild(generateRowForDefaults(context, document, param));
+      table.appendChild(generateRowForCardinality(document, param));
+      table.appendChild(generateRowForDescription(context, document, param));
 
-      final var c3 =
-        (Element) columns.appendChild(document.createElementNS(NS, "Column"));
-      c3.setTextContent("Default");
-
-      final var c4 =
-        (Element) columns.appendChild(document.createElementNS(NS, "Column"));
-      c4.setTextContent("Description");
-
-      final var sorted = new ArrayList<>(named);
-      sorted.sort(Comparator.comparing(QParameterType::name));
-
-      for (final var param : sorted) {
-        final var row =
-          (Element) table.appendChild(document.createElementNS(NS, "Row"));
-
-        generateCellForName(document, param, row);
-        generateCellForType(document, param, row);
-        generateCellForCardinality(document, param, row);
-        generateCellForDefault(context, document, param, row);
-        generateCellForDescription(context, document, param, row);
-      }
+      formal.appendChild(table);
+      root.appendChild(formal);
     }
+
+    return root;
   }
 
-  private static void generateCellForDescription(
+  private static Element generateRowForDescription(
     final QCommandContextType context,
     final Document document,
-    final QParameterNamedType<?> param,
-    final Element row)
+    final QParameterNamedType<?> param)
   {
-    final var cell =
-      (Element) row.appendChild(document.createElementNS(NS, "Cell"));
-    cell.setTextContent(context.localize(param.description()));
+    final var row =
+      (Element) document.createElementNS(NS, "Row");
+    final var cellN =
+      (Element) document.createElementNS(NS, "Cell");
+    final var cellV =
+      (Element) document.createElementNS(NS, "Cell");
+
+    final var vNode =
+      document.createTextNode(context.localize(param.description()));
+
+    cellN.appendChild(document.createTextNode("Description"));
+    cellV.appendChild(vNode);
+
+    row.appendChild(cellN);
+    row.appendChild(cellV);
+    return row;
   }
 
-  private static void generateCellForDefault(
+  private static Element generateRowForCardinality(
+    final Document document,
+    final QParameterNamedType<?> param)
+  {
+    final var row =
+      (Element) document.createElementNS(NS, "Row");
+    final var cellN =
+      (Element) document.createElementNS(NS, "Cell");
+    final var cellV =
+      (Element) document.createElementNS(NS, "Cell");
+
+    final var vNode =
+      generateCellForCardinality(document, param);
+
+    cellN.appendChild(document.createTextNode("Cardinality"));
+    cellV.appendChild(vNode);
+
+    row.appendChild(cellN);
+    row.appendChild(cellV);
+    return row;
+  }
+
+  private static Element generateRowForType(
+    final Document document,
+    final QParameterNamedType<?> param)
+  {
+    final var row =
+      (Element) document.createElementNS(NS, "Row");
+    final var cellN =
+      (Element) document.createElementNS(NS, "Cell");
+    final var cellV =
+      (Element) document.createElementNS(NS, "Cell");
+
+    final var vNode =
+      document.createElementNS(NS, "Term");
+    vNode.setAttribute("type", "class");
+    vNode.setTextContent(param.type().getCanonicalName());
+
+    cellN.appendChild(document.createTextNode("Type"));
+    cellV.appendChild(vNode);
+
+    row.appendChild(cellN);
+    row.appendChild(cellV);
+    return row;
+  }
+
+  private static Element generateRowForName(
+    final Document document,
+    final QParameterNamedType<?> param)
+  {
+    final var row =
+      (Element) document.createElementNS(NS, "Row");
+    final var cellN =
+      (Element) document.createElementNS(NS, "Cell");
+    final var cellV =
+      (Element) document.createElementNS(NS, "Cell");
+
+    final var vNode =
+      document.createElementNS(NS, "Term");
+    vNode.setAttribute("type", "parameter");
+    vNode.setTextContent(param.name());
+
+    cellN.appendChild(document.createTextNode("Name"));
+    cellV.appendChild(vNode);
+
+    row.appendChild(cellN);
+    row.appendChild(cellV);
+    return row;
+  }
+
+  private static Element generateRowForDefaults(
     final QCommandContextType context,
     final Document document,
-    final QParameterNamedType<?> param,
-    final Element row)
+    final QParameterNamedType<?> param)
     throws QException
   {
-    final var cell =
-      (Element) row.appendChild(document.createElementNS(NS, "Cell"));
+    final var row =
+      (Element) document.createElementNS(NS, "Row");
+    final var cellN =
+      (Element) document.createElementNS(NS, "Cell");
+    final var cellV =
+      (Element) document.createElementNS(NS, "Cell");
+
+    final var vNode =
+      generateTermForDefault(context, document, param);
+
+    cellN.appendChild(document.createTextNode("Default Value"));
+    cellV.appendChild(vNode);
+
+    row.appendChild(cellN);
+    row.appendChild(cellV);
+    return row;
+  }
+
+  private static Element generateTermForDefault(
+    final QCommandContextType context,
+    final Document document,
+    final QParameterNamedType<?> param)
+    throws QException
+  {
     final var term =
-      (Element) cell.appendChild(document.createElementNS(NS, "Term"));
+      (Element) document.createElementNS(NS, "Term");
 
     final QValueConverterType<Object> c =
       (QValueConverterType<Object>)
@@ -311,6 +486,8 @@ public final class QCommandXS implements QCommandType
     } else if (param instanceof final QParameterNamed1N<?> n) {
       term.setTextContent(formatParameterCellContent1N(c, n));
     }
+
+    return term;
   }
 
   private static String formatParameterCellContent1N(
@@ -373,15 +550,12 @@ public final class QCommandXS implements QCommandType
     return "";
   }
 
-  private static void generateCellForCardinality(
+  private static Element generateCellForCardinality(
     final Document document,
-    final QParameterNamedType<?> param,
-    final Element row)
+    final QParameterNamedType<?> param)
   {
-    final var cell =
-      (Element) row.appendChild(document.createElementNS(NS, "Cell"));
     final var term =
-      (Element) cell.appendChild(document.createElementNS(NS, "Term"));
+      (Element) document.appendChild(document.createElementNS(NS, "Term"));
 
     term.setAttribute("type", "expression");
     if (param instanceof QParameterNamed1<?>) {
@@ -393,32 +567,8 @@ public final class QCommandXS implements QCommandType
     } else if (param instanceof QParameterNamed1N<?>) {
       term.setTextContent("[1, N]");
     }
-  }
 
-  private static void generateCellForType(
-    final Document document,
-    final QParameterNamedType<?> param,
-    final Element row)
-  {
-    final var cell =
-      (Element) row.appendChild(document.createElementNS(NS, "Cell"));
-    final var term =
-      (Element) cell.appendChild(document.createElementNS(NS, "Term"));
-    term.setTextContent(param.type().getCanonicalName());
-    term.setAttribute("type", "type");
-  }
-
-  private static void generateCellForName(
-    final Document document,
-    final QParameterNamedType<?> param,
-    final Element row)
-  {
-    final var cell =
-      (Element) row.appendChild(document.createElementNS(NS, "Cell"));
-    final var term =
-      (Element) cell.appendChild(document.createElementNS(NS, "Term"));
-    term.setAttribute("type", "parameter");
-    term.setTextContent(param.name());
+    return term;
   }
 
   private static void sectionName(

@@ -595,7 +595,7 @@ public final class QApplicationTest
   }
 
   @Test
-  public void testXstructuralEverything()
+  public void testXstructuralMain()
     throws Exception
   {
     final var app =
@@ -610,6 +610,33 @@ public final class QApplicationTest
         LOG,
         List.of(
           "_xs",
+          "--type",
+          "main",
+          "cmd-everything"
+        )
+      );
+
+    assertNotEquals("", this.output.toString(UTF_8));
+  }
+
+  @Test
+  public void testXstructuralParameters()
+    throws Exception
+  {
+    final var app =
+      QApplication.builder(METADATA)
+        .setOutput(this.writer)
+        .addCommand(new QCommandXS("_xs", true))
+        .addCommand(new QCommandParametersEverything())
+        .build();
+
+    final var cmd =
+      app.run(
+        LOG,
+        List.of(
+          "_xs",
+          "--type",
+          "parameters",
           "cmd-everything"
         )
       );
