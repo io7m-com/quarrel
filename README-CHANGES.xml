@@ -29,9 +29,9 @@
         <c:change date="2023-11-04T00:00:00+00:00" summary="Add parameterValueRequireNow for optional parameters."/>
       </c:changes>
     </c:release>
-    <c:release date="2024-01-06T11:41:49+00:00" is-open="true" ticket-system="com.github.io7m.quarrel" version="1.5.0">
+    <c:release date="2024-01-06T11:43:10+00:00" is-open="false" ticket-system="com.github.io7m.quarrel" version="1.5.0">
       <c:changes>
-        <c:change date="2024-01-06T11:41:49+00:00" summary="Change format of xstructural parameters for better layout."/>
+        <c:change date="2024-01-06T00:00:00+00:00" summary="Change format of xstructural parameters for better layout."/>
       </c:changes>
     </c:release>
   </c:releases>
