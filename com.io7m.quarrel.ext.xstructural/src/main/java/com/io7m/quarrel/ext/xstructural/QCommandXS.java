@@ -190,6 +190,17 @@ public final class QCommandXS implements QCommandType
 
         sectionName(context, command, document, root);
         sectionDescription(context, command, document, root);
+
+        final var named = command.onListNamedParameters();
+        if (!named.isEmpty()) {
+          final var e =
+            (Element) root.appendChild(
+              document.createElementNS(NS_XI, "xi:include")
+            );
+
+          e.setAttribute("href", context.parameterValue(PARAMETERS_INCLUDE_NAME));
+        }
+
         sectionExamples(document, root);
       }
       case "parameters" -> {
@@ -265,24 +276,6 @@ public final class QCommandXS implements QCommandType
     para.appendChild(document.createTextNode("The "));
     para.appendChild(term);
     para.appendChild(document.createTextNode(" command... "));
-
-    final var named = command.onListNamedParameters();
-    if (!named.isEmpty()) {
-      final var formal =
-        (Element) description.appendChild(
-          document.createElementNS(NS, "FormalItem")
-        );
-
-      formal.setAttribute("title", "Parameters");
-
-      final var e =
-        (Element) description.appendChild(
-          document.createElementNS(NS_XI, "xi:include")
-        );
-
-      e.setAttribute("href", context.parameterValue(PARAMETERS_INCLUDE_NAME));
-      formal.appendChild(e);
-    }
   }
 
   private static Element parameterTable(
