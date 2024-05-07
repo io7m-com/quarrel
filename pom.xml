@@ -9,7 +9,7 @@
   <parent>
     <groupId>com.io7m.primogenitor</groupId>
     <artifactId>com.io7m.primogenitor.full</artifactId>
-    <version>8.1.0</version>
+    <version>8.2.0</version>
   </parent>
 
   <groupId>com.io7m.quarrel</groupId>
@@ -31,10 +31,15 @@
   </modules>
 
   <properties>
-    <com.io7m.jxtrand.version>2.0.0</com.io7m.jxtrand.version>
-    <com.io7m.xstructural.version>1.8.0</com.io7m.xstructural.version>
+    <!-- Configuration. -->
     <io7m.api.previousVersion>1.6.0</io7m.api.previousVersion>
     <io7m.java.targetJavaVersion>21</io7m.java.targetJavaVersion>
+
+    <!-- io7m dependencies. -->
+    <com.io7m.jxtrand.version>2.0.0</com.io7m.jxtrand.version>
+    <com.io7m.xstructural.version>1.8.0</com.io7m.xstructural.version>
+
+    <!-- Third-party dependencies. -->
     <jqwik.version>1.8.4</jqwik.version>
     <junit.version>5.10.2</junit.version>
   </properties>
@@ -159,7 +164,7 @@
       <dependency>
         <groupId>com.io7m.primogenitor</groupId>
         <artifactId>com.io7m.primogenitor.support</artifactId>
-        <version>8.1.0</version>
+        <version>8.2.0</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
