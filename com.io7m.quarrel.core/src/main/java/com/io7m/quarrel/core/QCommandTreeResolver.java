@@ -56,6 +56,9 @@ public final class QCommandTreeResolver
   {
     /**
      * The targeted object does not exist.
+     *
+     * @param path    The entered path
+     * @param badName The missing name
      */
 
     public QResolutionErrorDoesNotExist
@@ -94,6 +97,10 @@ public final class QCommandTreeResolver
   {
     /**
      * The targeted object exists and is a command.
+     *
+     * @param command   The command
+     * @param path      The path that lead to the command
+     * @param remaining The remaining arguments
      */
 
     public QResolutionOKCommand
@@ -118,6 +125,9 @@ public final class QCommandTreeResolver
   {
     /**
      * The targeted object exists and is a group.
+     *
+     * @param target The group
+     * @param path   The path that lead to the command
      */
 
     public QResolutionOKGroup
