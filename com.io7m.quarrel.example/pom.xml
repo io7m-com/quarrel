@@ -9,7 +9,7 @@
   <parent>
     <artifactId>com.io7m.quarrel</artifactId>
     <groupId>com.io7m.quarrel</groupId>
-    <version>1.7.0-SNAPSHOT</version>
+    <version>1.7.0</version>
   </parent>
 
   <artifactId>com.io7m.quarrel.example</artifactId>
