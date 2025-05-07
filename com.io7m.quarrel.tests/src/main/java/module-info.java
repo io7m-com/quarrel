@@ -26,10 +26,11 @@ open module com.io7m.quarrel.tests
   requires com.io7m.quarrel.core;
   requires com.io7m.quarrel.ext.xstructural;
 
-  requires transitive org.junit.jupiter.api;
-  requires transitive org.junit.jupiter.engine;
-  requires transitive org.junit.platform.commons;
-  requires transitive org.junit.platform.engine;
+  requires org.junit.jupiter.api;
+  requires org.junit.jupiter.engine;
+  requires org.junit.platform.commons;
+  requires org.junit.platform.engine;
+  requires org.junit.platform.launcher;
 
   requires org.apache.commons.io;
   requires org.slf4j;

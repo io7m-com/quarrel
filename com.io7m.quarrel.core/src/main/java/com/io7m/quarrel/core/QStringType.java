@@ -35,6 +35,8 @@ public sealed interface QStringType
   {
     /**
      * A string constant that can be directly displayed.
+     *
+     * @param text The text
      */
 
     public QConstant
@@ -54,6 +56,8 @@ public sealed interface QStringType
   {
     /**
      * A string constant that must be localized from a resource.
+     *
+     * @param id The id
      */
 
     public QLocalize

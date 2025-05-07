@@ -9,12 +9,12 @@
   <parent>
     <groupId>com.io7m.primogenitor</groupId>
     <artifactId>com.io7m.primogenitor.full</artifactId>
-    <version>8.2.0</version>
+    <version>8.5.0</version>
   </parent>
 
   <groupId>com.io7m.quarrel</groupId>
   <artifactId>com.io7m.quarrel</artifactId>
-  <version>1.6.1</version>
+  <version>1.7.0</version>
 
   <packaging>pom</packaging>
   <name>com.io7m.quarrel</name>
@@ -22,6 +22,7 @@
   <url>https://www.io7m.com/software/quarrel/</url>
 
   <modules>
+    <module>com.io7m.quarrel.bom</module>
     <module>com.io7m.quarrel.core</module>
     <module>com.io7m.quarrel.documentation</module>
     <module>com.io7m.quarrel.example</module>
@@ -32,16 +33,16 @@
 
   <properties>
     <!-- Configuration. -->
-    <io7m.api.previousVersion>1.6.0</io7m.api.previousVersion>
+    <io7m.api.previousVersion>1.6.1</io7m.api.previousVersion>
     <io7m.java.targetJavaVersion>21</io7m.java.targetJavaVersion>
 
     <!-- io7m dependencies. -->
     <com.io7m.jxtrand.version>2.1.0</com.io7m.jxtrand.version>
-    <com.io7m.xstructural.version>1.8.1</com.io7m.xstructural.version>
+    <com.io7m.xstructural.version>1.9.0</com.io7m.xstructural.version>
 
     <!-- Third-party dependencies. -->
-    <jqwik.version>1.8.4</jqwik.version>
-    <junit.version>5.10.2</junit.version>
+    <jqwik.version>1.9.2</jqwik.version>
+    <org.junit.version>5.12.2</org.junit.version>
   </properties>
 
   <licenses>
@@ -103,7 +104,7 @@
       <dependency>
         <groupId>com.io7m.seltzer</groupId>
         <artifactId>com.io7m.seltzer.api</artifactId>
-        <version>1.0.1</version>
+        <version>1.2.0</version>
       </dependency>
       <dependency>
         <groupId>org.osgi</groupId>
@@ -118,28 +119,27 @@
       <dependency>
         <groupId>nl.jqno.equalsverifier</groupId>
         <artifactId>equalsverifier</artifactId>
-        <version>3.16.1</version>
+        <version>3.19.4</version>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
-        <version>2.0.13</version>
+        <version>2.0.17</version>
       </dependency>
       <dependency>
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-classic</artifactId>
-        <version>1.5.6</version>
+        <version>1.5.18</version>
       </dependency>
+
       <dependency>
-        <groupId>org.junit.jupiter</groupId>
-        <artifactId>junit-jupiter-engine</artifactId>
-        <version>${junit.version}</version>
+        <groupId>org.junit</groupId>
+        <artifactId>junit-bom</artifactId>
+        <version>${org.junit.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
       </dependency>
-      <dependency>
-        <groupId>org.junit.jupiter</groupId>
-        <artifactId>junit-jupiter-api</artifactId>
-        <version>${junit.version}</version>
-      </dependency>
+
       <dependency>
         <groupId>net.jqwik</groupId>
         <artifactId>jqwik-api</artifactId>
@@ -163,12 +163,12 @@
       <dependency>
         <groupId>commons-io</groupId>
         <artifactId>commons-io</artifactId>
-        <version>2.16.1</version>
+        <version>2.19.0</version>
       </dependency>
       <dependency>
         <groupId>com.io7m.primogenitor</groupId>
         <artifactId>com.io7m.primogenitor.support</artifactId>
-        <version>8.2.0</version>
+        <version>8.5.0</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

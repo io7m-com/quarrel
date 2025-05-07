@@ -860,12 +860,14 @@ public final class QCommandParser implements QCommandParserType
   private enum ValidatedPositionalsNone
     implements ValidatedPositionalsType
   {
+    /** No positionals. */
     NONE
   }
 
   private enum ValidatedPositionalsAny
     implements ValidatedPositionalsType
   {
+    /** Any positionals. */
     ANY
   }
 
