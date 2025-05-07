@@ -14,7 +14,7 @@
 
   <groupId>com.io7m.quarrel</groupId>
   <artifactId>com.io7m.quarrel</artifactId>
-  <version>1.6.2-SNAPSHOT</version>
+  <version>1.7.0-SNAPSHOT</version>
 
   <packaging>pom</packaging>
   <name>com.io7m.quarrel</name>
@@ -22,6 +22,7 @@
   <url>https://www.io7m.com/software/quarrel/</url>
 
   <modules>
+    <module>com.io7m.quarrel.bom</module>
     <module>com.io7m.quarrel.core</module>
     <module>com.io7m.quarrel.documentation</module>
     <module>com.io7m.quarrel.example</module>
