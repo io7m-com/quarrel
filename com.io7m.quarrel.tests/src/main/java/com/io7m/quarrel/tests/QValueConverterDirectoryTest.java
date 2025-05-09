@@ -43,6 +43,7 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -104,6 +105,16 @@ public final class QValueConverterDirectoryTest
       .ofMinSize(1)
       .ofMaxSize(8)
       .map(xs -> Paths.get(xs[0], xs));
+  }
+
+  @Provide
+  private static Arbitrary<Pattern> patterns()
+  {
+    return Arbitraries.strings()
+      .alpha()
+      .ofMinLength(1)
+      .ofMaxLength(8)
+      .map(Pattern::compile);
   }
 
   @Provide
@@ -425,6 +436,26 @@ public final class QValueConverterDirectoryTest
       c.with(conv);
 
     assertEquals(Optional.of(conv), d.converterFor(Byte.class));
+  }
+
+  @Property
+  public void testPattern(
+    final @ForAll("patterns") Pattern x)
+    throws QException
+  {
+    final var c =
+      QValueConverterDirectory.core()
+        .converterFor(Pattern.class)
+        .orElseThrow();
+
+    assertEquals(
+      x.toString(),
+      c.convertFromString(c.convertToString(x)).toString()
+    );
+    assertEquals(
+      c.exampleValue().toString(),
+      c.convertFromString(c.convertToString(c.exampleValue())).toString()
+    );
   }
 
   private static final class ByteConverter
