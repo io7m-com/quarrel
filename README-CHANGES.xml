@@ -109,9 +109,9 @@
         <c:change date="2025-05-07T00:00:00+00:00" summary="Update com.io7m.seltzer:com.io7m.seltzer.api:1.1.0 → 1.2.0."/>
       </c:changes>
     </c:release>
-    <c:release date="2025-05-09T11:48:31+00:00" is-open="true" ticket-system="com.github.io7m.quarrel" version="1.8.0">
+    <c:release date="2025-05-09T15:16:41+00:00" is-open="false" ticket-system="com.github.io7m.quarrel" version="1.8.0">
       <c:changes>
-        <c:change date="2025-05-09T11:48:31+00:00" summary="Add java.util.Pattern as a default value converter."/>
+        <c:change date="2025-05-09T00:00:00+00:00" summary="Add java.util.Pattern as a default value converter."/>
       </c:changes>
     </c:release>
   </c:releases>
