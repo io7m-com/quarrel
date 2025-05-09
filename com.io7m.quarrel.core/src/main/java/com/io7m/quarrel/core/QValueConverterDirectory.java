@@ -29,6 +29,7 @@ import com.io7m.quarrel.core.converters.QVCInteger;
 import com.io7m.quarrel.core.converters.QVCLong;
 import com.io7m.quarrel.core.converters.QVCOffsetDateTime;
 import com.io7m.quarrel.core.converters.QVCPath;
+import com.io7m.quarrel.core.converters.QVCPattern;
 import com.io7m.quarrel.core.converters.QVCString;
 import com.io7m.quarrel.core.converters.QVCURI;
 import com.io7m.quarrel.core.converters.QVCUUID;
@@ -46,6 +47,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 /**
  * The default value converter directory.
@@ -90,6 +92,7 @@ public final class QValueConverterDirectory
       Map.entry(Long.class, QVCLong.get()),
       Map.entry(OffsetDateTime.class, QVCOffsetDateTime.get()),
       Map.entry(Path.class, QVCPath.get()),
+      Map.entry(Pattern.class, QVCPattern.get()),
       Map.entry(String.class, QVCString.get()),
       Map.entry(URI.class, QVCURI.get()),
       Map.entry(UUID.class, QVCUUID.get())

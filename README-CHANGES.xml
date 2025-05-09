@@ -59,7 +59,7 @@
         <c:change date="2024-05-10T00:00:00+00:00" summary="Update com.io7m.jxtrand.version:2.0.0 → 2.1.0."/>
       </c:changes>
     </c:release>
-    <c:release date="2025-05-07T18:48:31+00:00" is-open="false" ticket-system="com.github.io7m.quarrel" version="1.7.0">
+    <c:release date="2025-05-07T00:00:00+00:00" is-open="false" ticket-system="com.github.io7m.quarrel" version="1.7.0">
       <c:changes>
         <c:change date="2024-05-24T00:00:00+00:00" summary="Update jqwik.version:1.8.4 → 1.8.5."/>
         <c:change date="2024-06-28T00:00:00+00:00" summary="Update jqwik.version:1.8.5 → 1.9.0."/>
@@ -107,6 +107,11 @@
         <c:change date="2025-05-01T00:00:00+00:00" summary="Update commons-io:commons-io:2.18.0 → 2.19.0."/>
         <c:change date="2025-05-07T00:00:00+00:00" summary="Publish a com.io7m.quarrel.bom module."/>
         <c:change date="2025-05-07T00:00:00+00:00" summary="Update com.io7m.seltzer:com.io7m.seltzer.api:1.1.0 → 1.2.0."/>
+      </c:changes>
+    </c:release>
+    <c:release date="2025-05-09T15:16:41+00:00" is-open="false" ticket-system="com.github.io7m.quarrel" version="1.8.0">
+      <c:changes>
+        <c:change date="2025-05-09T00:00:00+00:00" summary="Add java.util.Pattern as a default value converter."/>
       </c:changes>
     </c:release>
   </c:releases>
