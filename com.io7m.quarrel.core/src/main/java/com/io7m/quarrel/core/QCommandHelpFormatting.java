@@ -21,7 +21,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.lang.Math.max;
@@ -181,7 +183,7 @@ public final class QCommandHelpFormatting
       for (final var parameter : named) {
         final var converter =
           converters.converterFor(parameter.type())
-            .orElseThrow();
+            .orElseThrow(() -> errorNoConverterFor(parameter.type()));
 
         showParameterName(writer, parameter);
         showParameterDescription(
@@ -240,6 +242,20 @@ public final class QCommandHelpFormatting
       writer.println();
       writer.println();
     }
+  }
+
+  private static QException errorNoConverterFor(
+    final Class<?> type)
+  {
+    return new QException(
+      "No converter is available for type '%s'".formatted(type),
+      "error-missing-converter",
+      Map.ofEntries(
+        Map.entry("Type", type.getCanonicalName())
+      ),
+      Optional.of("This is a bug: Register an appropriate converter!"),
+      List.of()
+    );
   }
 
   private static void showParameterDescription(
